@@ -11,11 +11,6 @@ declare module 'vue' {
     Heading1: typeof import('./components/shared/Heading1.vue')['default']
     Heading2: typeof import('./components/shared/Heading2.vue')['default']
     Hero: typeof import('./components/Hero.vue')['default']
-    MdiAlien: typeof import('~icons/mdi/alien')['default']
-    MdiArrowRight: typeof import('~icons/mdi/arrow-right')['default']
-    MdiGithub: typeof import('~icons/mdi/github')['default']
-    MdiMoonWaningCrescent: typeof import('~icons/mdi/moon-waning-crescent')['default']
-    MdiWhiteBalanceSunny: typeof import('~icons/mdi/white-balance-sunny')['default']
     Navbar: typeof import('./components/Navbar.vue')['default']
   }
 }

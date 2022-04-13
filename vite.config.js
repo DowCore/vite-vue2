@@ -27,7 +27,7 @@ const config = defineConfig({
     Components({
       resolvers: [
         IconsResolver({
-          componentPrefix: '',
+          componentPrefix: 'icon',
         }),
       ],
       dts: 'src/components.d.ts',
