@@ -56,7 +56,6 @@
 
 <script setup lang="ts">
 import { routes } from '@/router'
-
 // Import config from .env
 const appName = import.meta.env.VITE_APP_NAME
 

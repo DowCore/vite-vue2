@@ -11,7 +11,13 @@ declare module 'vue' {
     Heading1: typeof import('./components/shared/Heading1.vue')['default']
     Heading2: typeof import('./components/shared/Heading2.vue')['default']
     Hero: typeof import('./components/Hero.vue')['default']
+    IconCarbonAccessibility: typeof import('~icons/carbon/accessibility')['default']
+    IconCarbonAccessibilityColor: typeof import('~icons/carbon/accessibility-color')['default']
+    IconCarbonBookmarkAdd: typeof import('~icons/carbon/bookmark-add')['default']
+    IconCarbonSave: typeof import('~icons/carbon/save')['default']
+    IconSvgYintao: typeof import('~icons/svg/yintao')['default']
     Navbar: typeof import('./components/Navbar.vue')['default']
+    Title: typeof import('./components/PageEditor/Title.vue')['default']
   }
 }
 

@@ -471,6 +471,20 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz#b520529ec21d8e5945a1851dfd1c32e94e39ff45"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
+"@iconify-icons/bx@^1.2.3":
+  version "1.2.3"
+  resolved "https://registry.npmmirror.com/@iconify-icons/bx/-/bx-1.2.3.tgz#c456805e295fb9c9484a871e6a5a3b1e030ab68a"
+  integrity sha512-c0uqmNVRqU2koqf610sgeWUNlX4tfwWu3jzA5ceYyc2xWU2iQHNVkvsy7LodxonMedk8vFd+daY81pDUngzqoA==
+  dependencies:
+    "@iconify/types" "^1.0.12"
+
+"@iconify-icons/dashicons@^1.2.2":
+  version "1.2.2"
+  resolved "https://registry.npmmirror.com/@iconify-icons/dashicons/-/dashicons-1.2.2.tgz#9c3a5d0e0bd48127acc6daf824bf75016255337f"
+  integrity sha512-XOBLMOsb6VP/pmO8Ek6DIdgPki4qhzMXFx0wmbhka3uLd62XLWlCzFqpgjFpGPQM96ue9IGUQxOZBE1mFmG52Q==
+  dependencies:
+    "@iconify/types" "^1.0.12"
+
 "@iconify/json@^2.1.14":
   version "2.1.14"
   resolved "https://registry.yarnpkg.com/@iconify/json/-/json-2.1.14.tgz#5c0422b233f1fbdfacdab2825a6f3a02f6731903"
@@ -495,6 +509,11 @@
     debug "^4.3.3"
     kolorist "^1.5.0"
     local-pkg "^0.4.0"
+
+"@iconify/vue2@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.npmmirror.com/@iconify/vue2/-/vue2-1.2.1.tgz#f858bcfe8554970cca6d8f4c7a7e8015c7933fbb"
+  integrity sha512-aJy/PLs0mqKF5wv6vMc+Pf2+v4TkrlLP15tTU15Tbyw5OSnIGZa64eCkEEJnag2h8+XIf/mx6MOf7m2DE58pHw==
 
 "@jridgewell/resolve-uri@^3.0.3":
   version "3.0.5"
@@ -560,6 +579,11 @@
   version "0.0.29"
   resolved "https://registry.yarnpkg.com/@types/json5/-/json5-0.0.29.tgz#ee28707ae94e11d2b827bcbe5270bcea7f3e71ee"
   integrity sha1-7ihweulOEdK4J7y+UnC86n8+ce4=
+
+"@types/lodash@^4.14.181":
+  version "4.14.181"
+  resolved "https://registry.npmmirror.com/@types/lodash/-/lodash-4.14.181.tgz#d1d3740c379fda17ab175165ba04e2d03389385d"
+  integrity sha512-n3tyKthHJbkiWhDZs3DkhkCzt2MexYHXlX0td5iMplyfwketaOeKboEVBqzceH7juqvEg3q5oUoBFxSLu7zFag==
 
 "@types/mdast@^3.0.0":
   version "3.0.10"
@@ -2443,7 +2467,7 @@ lodash.merge@^4.6.2:
 
 lodash@^4.17.21:
   version "4.17.21"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
+  resolved "https://registry.npmmirror.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
 
 loose-envify@^1.4.0:

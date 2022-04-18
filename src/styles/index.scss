@@ -1,0 +1,28 @@
+.margin-top {
+    @include modifier("sm") {
+        margin-top: $space-sm;
+    }
+    @include modifier("md") {
+        margin-top: $space-md;
+    }
+    @include modifier("lg") {
+        margin-top: $space-lg;
+    }
+}
+
+.margin-bottom {
+    @include modifier("sm") {
+        margin-bottom: $space-sm;
+    }
+    @include modifier("md") {
+        margin-bottom: $space-md;
+    }
+    @include modifier("lg") {
+        margin-bottom: $space-lg;
+    }
+}
+
+.app-icon-svg {
+    width: 1.2em;
+    height: 1.2em;
+}
