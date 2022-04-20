@@ -1,6 +1,7 @@
-/*  import Guides from '@scena/guides'
+import Guides from '@scena/guides'
+import { useEventListener } from '@vueuse/core'
 interface Ruler {
-  size?: number
+  size: number
   width: number
   height: number
   horizontal: HTMLElement
@@ -11,6 +12,7 @@ interface Ruler {
   }
   unit?: number
   backgroundColor?: string
+  lineColor?: string
 }
 export function useRuler(ruler: Ruler) {
   const horizontal = new Guides(
@@ -19,53 +21,50 @@ export function useRuler(ruler: Ruler) {
       type: 'horizontal',
       rulerStyle: { left: `${ruler.size}px`, width: 'calc(100% - 30px)', height: '100%' },
       lockGuides: true,
-      zoom: ruler.unit,
+      zoom: ruler.zoom.x,
       unit: ruler.unit || 100,
-      backgroundColor: '#5cadff',
-      lineColor: '#fff',
-      range: [0, props.designWidth],
-    }
+      backgroundColor: ruler.backgroundColor ?? '#5cadff',
+      lineColor: ruler.lineColor ?? '#fff',
+      range: [0, ruler.width],
+    },
   )
-  const zoomV = ((root?.value as HTMLElement).clientHeight - 30) / designHeight
-  const vGuides = new Guides(
-    document.querySelector('.ruler__vertical') as HTMLElement,
+  const vertical = new Guides(
+    ruler.vertical,
     {
       type: 'vertical',
       rulerStyle: { height: '100%', width: '100%' },
       lockGuides: true,
-      zoom: zoomV,
-      backgroundColor: '#5cadff',
-      lineColor: '#fff',
-      unit: 100,
-      range: [0, designHeight],
-    }
+      zoom: ruler.zoom.y,
+      unit: ruler.unit || 100,
+      backgroundColor: ruler.backgroundColor ?? '#5cadff',
+      lineColor: ruler.lineColor ?? '#fff',
+      range: [0, ruler.height],
+    },
   )
-  const resize = () => {
-    hGuides.resize()
-    vGuides.resize()
+  const reset = () => {
+    horizontal.scroll(0)
+    vertical.scroll(0)
   }
-  let scrollX = 0
-  let scrollY = 0
-
-  const { scrollWidth, scrollHeight, offsetWidth } = box
-  const scrollTo = debounce((element: HTMLElement, x: number, y: number) => {
-    element.scrollTo(x, y)
-  }, 50)
-
-  window.addEventListener('resize', resize)
+  useEventListener(window, 'resize', () => {
+    reset()
+    horizontal.resize()
+    vertical.resize()
+  })
   onUnmounted(() => {
     horizontal.destroy()
   })
-  const reset = () => {
-    scrollX = 0
-    scrollY = 0
-    vGuides.scroll(0)
-    vGuides.scrollGuides(0)
-    hGuides.scroll(0)
-    hGuides.scrollGuides(0)
-    scrollTo(box, 0, 0)
+  const resize = (width: number, height: number, zoomX: number, zoomY: number) => {
+    horizontal.setState({ range: [0, width], zoom: zoomX })
+    vertical.setState({ range: [0, height], zoom: zoomY })
   }
-  useEventBus('reset-ruler').on((data) => {
-    reset()
-  })
-} */
+  const scroll = (x: number, y: number) => {
+    horizontal.scroll(x)
+    horizontal.scrollGuides(x)
+    vertical.scroll(y)
+  }
+  return {
+    reset,
+    scroll,
+    resize,
+  }
+}

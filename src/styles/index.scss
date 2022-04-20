@@ -26,7 +26,17 @@
         margin-bottom: $space-lg;
     }
 }
-
+.margin-left {
+    @include modifier("sm") {
+        margin-left: $space-sm;
+    }
+    @include modifier("md") {
+        margin-left: $space-md;
+    }
+    @include modifier("lg") {
+        margin-left: $space-lg;
+    }
+}
 .app-icon-svg {
     width: 1.2em;
     height: 1.2em;
