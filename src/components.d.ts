@@ -15,9 +15,10 @@ declare module 'vue' {
     IconCarbonAccessibilityColor: typeof import('~icons/carbon/accessibility-color')['default']
     IconCarbonBookmarkAdd: typeof import('~icons/carbon/bookmark-add')['default']
     IconCarbonSave: typeof import('~icons/carbon/save')['default']
-    IconSvgYintao: typeof import('~icons/svg/yintao')['default']
     Navbar: typeof import('./components/Navbar.vue')['default']
-    Title: typeof import('./components/PageEditor/Title.vue')['default']
+    PagePanel: typeof import('./components/page-editor/PagePanel.vue')['default']
+    Ruler: typeof import('./components/ruler/Ruler.vue')['default']
+    Title: typeof import('./components/ruler/Title.vue')['default']
   }
 }
 

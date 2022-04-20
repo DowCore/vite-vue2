@@ -8,10 +8,13 @@
     "lint:fix": "eslint \"**/*.{vue,ts,js}\" --fix"
   },
   "dependencies": {
+    "@better-scroll/core": "^2.4.2",
+    "@scena/guides": "^0.18.1",
     "@vue/composition-api": "^1.4.9",
     "@vueuse/core": "^8.0.0",
     "core-js": "^3.21.1",
     "element-ui": "^2.15.6",
+    "gesto": "^1.7.0",
     "lodash": "^4.17.21",
     "vue": "^2.6.14",
     "vue-router": "^3.5.3"
