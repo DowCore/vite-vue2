@@ -1,6 +1,6 @@
 <template>
   <div ref="root" class="ruler">
-    <div class="ruler__horizontal" />
+    <div class="ruler__horizontal relative" />
     <div class="flex flex-1 ruler-area">
       <div class="ruler__vertical" />
       <div class="ruler__content flex-1">
@@ -25,7 +25,6 @@ let _scrollZoomY = 1
 const _designChange = useEventBus('page-design-change')
 const root = ref<null | Element>(null)
 const style = ref<null | object>(null)
-
 onMounted(() => {
   const { offsetWidth: rootWidth, offsetHeight: rootHeight } =
     root.value as HTMLElement
@@ -53,7 +52,7 @@ onMounted(() => {
   })
   const init = () => {
     style.value = {
-      'transform-origin': 'top left',
+      'transform-origin': 'left top',
       'transform': `scale(${zoomX},${zoomY})`,
     }
     _scrollWidth = box.scrollWidth
@@ -78,30 +77,40 @@ onMounted(() => {
   new Gesto(box).on('drag', (e) => {
     _scrollX += e.deltaX
     _scrollY += e.deltaY
-    if (e.deltaX > 0) {
-      _scrollX = Math.min(_scrollX, _scrollWidth - _designWidth)
-      if (_scrollX > _scrollWidth - _designWidth) {
-        _scrollX = _scrollWidth - _designWidth
+    if (_scrollWidth > _designWidth) {
+      if (e.deltaX > 0) {
+        _scrollX = Math.min(_scrollX, _scrollWidth - _designWidth)
+        if (_scrollX > _scrollWidth - _designWidth) {
+          _scrollX = _scrollWidth - _designWidth
+        }
+      }
+      else {
+        _scrollX = Math.min(_scrollX, 0)
+        if (_scrollX < 0) {
+          _scrollX = 0
+        }
       }
     }
-    if (e.clientX < 0) {
-      _scrollX = Math.min(_scrollX, 0)
-      if (_scrollX < 0) {
-        _scrollX = 0
+    else {
+      _scrollX = 0
+    }
+    if (_scrollHeight > _designHeight) {
+      // 向上
+      if (e.deltaY < 0) {
+        _scrollY = Math.min(_scrollY, 0)
+        if (_scrollY < 0) {
+          _scrollY = 0
+        }
+      }
+      else {
+        _scrollY = Math.min(_scrollY, _scrollHeight - _designHeight)
+        if (_scrollY > _scrollHeight - _designHeight) {
+          _scrollY = _scrollHeight - _designHeight
+        }
       }
     }
-    // 向上
-    if (e.deltaY < 0) {
-      _scrollY = Math.min(_scrollY, 0)
-      if (_scrollY < 0) {
-        _scrollY = 0
-      }
-    }
-    if (e.deltaY > 0) {
-      _scrollY = Math.min(_scrollY, _scrollHeight - _designHeight)
-      if (_scrollY > _scrollHeight - _designHeight) {
-        _scrollY = _scrollHeight - _designHeight
-      }
+    else {
+      _scrollY = 0
     }
     ruler.scroll(_scrollX, _scrollY)
     scrollTo(box, _scrollX, _scrollY * _scrollZoomY)

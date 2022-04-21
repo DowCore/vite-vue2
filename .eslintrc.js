@@ -7,7 +7,7 @@ module.exports = {
       after: true,
     }],
     'block-spacing': [2, 'always'],
-    'brace-style': [2, '1tbs', {
+    'brace-style': [0, '1tbs', {
       allowSingleLine: true,
     }],
     'camelcase': [0, {

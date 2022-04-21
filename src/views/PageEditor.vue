@@ -47,16 +47,33 @@
           </el-button-group>
         </div>
         <div class="page-editor-sidebar-layout margin-top--sm">
-          <PagePanel />
+          <PagePanel
+            @background-change="pageBackgroundChange"
+            @spacing-change="pageSpacingChange"
+            @gap-change="pageGapChange"
+          />
         </div>
       </div>
       <div class="page-editor-content flex-1">
         <div class="page-editor-content__area">
-          <ruler>
+          <ruler ref="myRuler">
             <template>
-              <div style="width: 2500px; height: 1280px">
-                这里可以显示内容
-              </div>
+              <draggable
+                :list="rows"
+                group="people"
+                class="page-area"
+                :class="pageClass"
+                :style="style"
+                @change="log"
+              >
+                <div
+                  v-for="element in rows"
+                  :key="element.key"
+                  class="page-area-row"
+                >
+                  {{ element.key }}
+                </div>
+              </draggable>
             </template>
           </ruler>
         </div>
@@ -98,13 +115,76 @@
   </div>
 </template>
 <script lang="ts" setup>
+import { assign, omit } from 'lodash'
+import draggable from 'vuedraggable'
 const activeSiderbar = ref('layout')
+const style = ref<any>({
+  'background-color': '#f5f7f9',
+  'padding-top': '24px',
+  'padding-left': '24px',
+  'padding-right': '24px',
+  'padding-bottom': '24px',
+  'minWidth': '1920px',
+  'minHeight': '1080px',
+  'display': 'grid',
+  'row-gap': '16px',
+})
+const gap = ref<string>('md')
+const pageClass = computed(() => {
+  // 这样写是为了 tailwindcss 识别出class，切换时生效
+  let spaceY = 'space-y-md'
+  switch (gap.value) {
+    case 'md':
+      spaceY = 'space-y-md'
+      break
+    case 'sm':
+      spaceY = 'space-y-sm'
+      break
+    case 'lg':
+      spaceY = 'space-y-lg'
+      break
+  }
+  return style.value.display === 'flex' ? `flex-col ${spaceY}` : ''
+})
+const rows = ref<Array<any>>([{ key: 1 }, { key: 2 }])
+useEventBus('page-design-change').on((data: any) => {
+  style.value.minWidth = `${data.width}px`
+  style.value.minHeight = `${data.height}px`
+})
 const sidbarChange = (type: string) => {
   activeSiderbar.value = type
 }
 const onAdd = () => {
   const myBus = useEventBus('reset-ruler')
   myBus.emit()
+}
+
+const pageBackgroundChange = (color: string) => {
+  style.value['background-color'] = color
+}
+const pageSpacingChange = (padding: any) => {
+  const obj = Object.keys(padding).reduce((pre: any, cur: string) => {
+    pre[`padding-${cur}`] = `${padding[cur]}px`
+    return pre
+  }, {})
+  style.value = assign(style.value, obj)
+}
+const pageGapChange = (rowGap: any) => {
+  const maps = new Map([
+    ['md', '16px'],
+    ['lg', '24px'],
+    ['sm', '8px'],
+  ])
+  let obj: any = { ...rowGap }
+  obj = assign(style.value, { display: rowGap.display })
+  gap.value = rowGap.gap
+  if (rowGap.display === 'flex') {
+    obj = omit(obj, 'row-gap')
+  }
+  else {
+    obj['row-gap'] = maps.get(rowGap.gap)
+  }
+  style.value = obj
 }
 </script>
 <style lang="scss" scoped>
@@ -121,7 +201,7 @@ const onAdd = () => {
       &:hover {
         color: #5cadff;
       }
-      @include modifier("active") {
+      @include modifier('active') {
         color: #3091f2;
       }
     }
@@ -135,7 +215,7 @@ const onAdd = () => {
     &-group {
       &__button {
         width: 104px;
-        @include modifier("active") {
+        @include modifier('active') {
           background: #3091f2 !important;
           color: #fff !important;
         }
@@ -151,6 +231,14 @@ const onAdd = () => {
   }
   &-panel {
     width: 272px;
+  }
+
+  .page-area {
+    &-row {
+      min-height: 24px;
+      background-color: #fff;
+      min-width: 100px;
+    }
   }
 }
 </style>
