@@ -1,38 +1,5 @@
 <template>
   <div>
-    <div class="margin-bottom--md">
-      <div class="panel-title">
-        设计大小（单位：px）
-      </div>
-      <div class="flex">
-        <div class="panel-attribute">
-          宽
-        </div>
-        <div class="panel-value">
-          <el-input-number
-            v-model="width"
-            controls-position="right"
-            :min="1280"
-            :step="80"
-            :max="3840"
-          />
-        </div>
-      </div>
-      <div class="flex">
-        <div class="panel-attribute">
-          高
-        </div>
-        <div class="panel-value">
-          <el-input-number
-            v-model="height"
-            controls-position="right"
-            :min="720"
-            :step="80"
-            :max="2160"
-          />
-        </div>
-      </div>
-    </div>
     <el-collapse v-model="activeNames">
       <el-collapse-item title="页面设置" name="page">
         <div class="panel">
@@ -147,6 +114,7 @@
         <draggable
           :list="layouts"
           class="layouts"
+          :sort="false"
           :group="{ name: 'layouts', pull: 'clone', put: false }"
           :clone="customClone"
         >
@@ -171,11 +139,8 @@ interface Spacing {
   right: number
 }
 const activeNames = ref<Array<string>>(['page', 'layout'])
-const width = ref<number>(1920)
-const height = ref<number>(1080)
 const layout = ref<string>('grid')
 const rowGap = ref<string>('md')
-const _designChange = useEventBus('page-design-change')
 const padding = ref<Spacing>({ top: 24, left: 24, right: 24, bottom: 24 })
 const color = ref<string>('#f5f7f9')
 const layouts = ref<Array<any>>([
@@ -192,9 +157,6 @@ const layouts = ref<Array<any>>([
     columns: 3,
   },
 ])
-watch([() => width.value, () => height.value], () => {
-  _designChange.emit({ width: width.value, height: height.value })
-})
 const _emit = defineEmits(['background-change', 'spacing-change', 'gap-change'])
 watch(
   () => color.value,

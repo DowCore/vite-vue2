@@ -47,35 +47,73 @@
           </el-button-group>
         </div>
         <div class="page-editor-sidebar-layout margin-top--sm">
-          <PagePanel
-            @background-change="pageBackgroundChange"
-            @spacing-change="pageSpacingChange"
-            @gap-change="pageGapChange"
-          />
+          <div v-show="activeSiderbar === 'layout'">
+            <div class="margin-bottom--md">
+              <div class="panel-title">
+                设计大小（单位：px）
+              </div>
+              <div class="flex">
+                <div class="panel-attribute">
+                  宽
+                </div>
+                <div class="panel-value">
+                  <el-input-number
+                    v-model="designWidth"
+                    controls-position="right"
+                    :min="1280"
+                    :step="80"
+                    :max="3840"
+                  />
+                </div>
+              </div>
+              <div class="flex">
+                <div class="panel-attribute">
+                  高
+                </div>
+                <div class="panel-value">
+                  <el-input-number
+                    v-model="designHeight"
+                    controls-position="right"
+                    :min="720"
+                    :step="80"
+                    :max="2160"
+                  />
+                </div>
+              </div>
+            </div>
+            <PagePanel
+              @background-change="pageBackgroundChange"
+              @spacing-change="pageSpacingChange"
+              @gap-change="pageGapChange"
+            />
+          </div>
         </div>
       </div>
       <div class="page-editor-content flex-1">
-        <div class="page-editor-content__area">
-          <ruler ref="myRuler">
-            <template>
-              <draggable
-                :list="rows"
-                group="people"
-                class="page-area"
-                :class="pageClass"
-                :style="style"
-                @change="log"
-              >
-                <div
-                  v-for="element in rows"
-                  :key="element.key"
-                  class="page-area-row"
+        <div class="ruler">
+          <div class="ruler__horizontal relative" />
+          <div class="flex flex-1 ruler-area">
+            <div class="ruler__vertical" />
+            <div class="ruler__content flex-1">
+              <div :style="rulerStyle" class="relative">
+                <draggable
+                  :list="rows"
+                  group="layouts"
+                  class="page-area"
+                  :class="pageClass"
+                  :style="style"
                 >
-                  {{ element.key }}
-                </div>
-              </draggable>
-            </template>
-          </ruler>
+                  <div
+                    v-for="element in rows"
+                    :key="element.key"
+                    class="page-area-row relative"
+                  >
+                    {{ element.key }}
+                  </div>
+                </draggable>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="page-editor-panel relative">
@@ -115,8 +153,9 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { assign, omit } from 'lodash'
+import { assign, debounce, omit } from 'lodash'
 import draggable from 'vuedraggable'
+import useRuler from '@/utils/uses/useRuler'
 const activeSiderbar = ref('layout')
 const style = ref<any>({
   'background-color': '#f5f7f9',
@@ -129,6 +168,8 @@ const style = ref<any>({
   'display': 'grid',
   'row-gap': '16px',
 })
+const designWidth = ref<number>(1920)
+const designHeight = ref<number>(1080)
 const gap = ref<string>('md')
 const pageClass = computed(() => {
   // 这样写是为了 tailwindcss 识别出class，切换时生效
@@ -146,7 +187,7 @@ const pageClass = computed(() => {
   }
   return style.value.display === 'flex' ? `flex-col ${spaceY}` : ''
 })
-const rows = ref<Array<any>>([{ key: 1 }, { key: 2 }])
+const rows = ref<Array<any>>([{ key: 'row-1' }, { key: 'row-2' }])
 useEventBus('page-design-change').on((data: any) => {
   style.value.minWidth = `${data.width}px`
   style.value.minHeight = `${data.height}px`
@@ -169,6 +210,38 @@ const pageSpacingChange = (padding: any) => {
   }, {})
   style.value = assign(style.value, obj)
 }
+const rulerStyle = ref<object>({})
+onMounted(() => {
+  const box: HTMLElement = document.querySelector(
+    '.ruler__content',
+  ) as HTMLElement
+  const zoomX = box.clientWidth / designWidth.value
+  rulerStyle.value = {
+    'transform-origin': '0 0',
+    'transform': `scale(${zoomX},1)`,
+  }
+  let ruler: any = null
+  nextTick(() => {
+    ruler = useRuler(
+      document.querySelector('.ruler__horizontal') as HTMLElement,
+      document.querySelector('.ruler__vertical') as HTMLElement,
+      box,
+      document.querySelector('.page-area') as HTMLElement,
+    )
+  })
+  watch([() => designWidth.value, () => designHeight.value], () => {
+    const zoomX = box.clientWidth / designWidth.value
+    rulerStyle.value = {
+      'transform-origin': '0 0',
+      'transform': `scale(${zoomX},1)`,
+    }
+    nextTick(() => {
+      debounce(() => {
+        ruler.resetDesign(designWidth.value, designHeight.value)
+      }, 500)()
+    })
+  })
+})
 const pageGapChange = (rowGap: any) => {
   const maps = new Map([
     ['md', '16px'],
@@ -223,22 +296,78 @@ const pageGapChange = (rowGap: any) => {
     }
   }
   &-content {
-    &__area {
-      position: relative;
-      width: 100%;
-      height: calc(100vh - 70px);
-    }
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 70px);
   }
   &-panel {
     width: 272px;
   }
 
   .page-area {
+    height: 1080px;
+    width: 1920px;
+    position: relative;
     &-row {
       min-height: 24px;
       background-color: #fff;
       min-width: 100px;
     }
+  }
+
+  .ruler {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+
+    &__horizontal {
+      height: 30px;
+    }
+
+    &-area {
+      position: relative;
+      height: calc(100% - 30px);
+    }
+
+    &__vertical {
+      width: 30px;
+      height: 100%;
+    }
+
+    &__content {
+      position: relative;
+      overflow: auto;
+      max-width: calc(100vw - 606px);
+      min-width: 1280px;
+      min-height: 720px;
+
+      &::-webkit-scrollbar {
+        //width: 0 !important;
+      }
+    }
+  }
+
+  .panel-title {
+    font-size: 12px;
+    color: #464c5b;
+    height: 20px;
+    line-height: 20px;
+    margin-bottom: 8px;
+  }
+  .panel-attribute {
+    font-size: 14px;
+    width: 60px;
+    margin-right: 8px;
+    text-align: right;
+    line-height: 36px;
+    height: 36px;
+  }
+  .panel-value {
+    font-size: 14px;
+    line-height: 36px;
+    height: 36px;
   }
 }
 </style>
