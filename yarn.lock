@@ -3663,6 +3663,11 @@ vue-eslint-parser@^8.0.1:
     lodash "^4.17.21"
     semver "^7.3.5"
 
+vue-right-click-menu@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.npmmirror.com/vue-right-click-menu/-/vue-right-click-menu-1.1.1.tgz#04c9a51e479c474748d6c4f0e0c23630ab1f6803"
+  integrity sha512-zvZea1Gc7548+8BlEQfz8gyIEJdLClt3KeEJkqkzfvjQ7kG9/FsaOYeXg4+28lnHeC7drVmyFuYyC4clenbcCw==
+
 vue-router@^3.5.3:
   version "3.5.3"
   resolved "https://registry.yarnpkg.com/vue-router/-/vue-router-3.5.3.tgz#041048053e336829d05dafacf6a8fb669a2e7999"

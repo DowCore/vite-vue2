@@ -79,14 +79,12 @@ export default function useRuler(
   designHeight = 1080,
 ) {
   let _designWidth = designWidth
-  const _designHeight = designHeight
+  let _rulerHeight = designHeight
   let _scrollX = 0
   let _scrollY = 0
   let _scrollWidth = 0
   let _scrollHeight = 0
-  // let _scrollZoomX = 1
-  let _offsetWidth = designWidth
-  // let _offsetHeight = designHeight
+  let _scrollZoomX = 1
   let _zoomX = 1
   const scrollTo = debounce((element: HTMLElement, x: number, y: number) => {
     element.scrollTo(x, y)
@@ -97,18 +95,18 @@ export default function useRuler(
   const init = () => {
     _scrollWidth = content.scrollWidth
     _scrollHeight = content.scrollHeight
-    _offsetWidth = container.offsetWidth
-    // _offsetHeight = container.offsetHeight
-    _zoomX = _offsetWidth / _designWidth
-    /* if (_scrollWidth > _offsetWidth) {
-      _scrollZoomX = (_scrollHeight - _offsetHeight) / (_scrollHeight - _designHeight)
-    }*/
+    _rulerHeight = container.offsetHeight
+    _zoomX = container.offsetWidth / _designWidth
+    if (_scrollWidth > _designWidth) {
+      _scrollZoomX =
+        (container.scrollWidth - container.offsetWidth) / (_scrollWidth - _designWidth)
+    }
   }
   init()
   const ruler = createRuler({
     size: 30,
     width: _designWidth,
-    height: _designHeight,
+    height: _rulerHeight,
     horizontal,
     vertical,
     zoom: _zoomX,
@@ -138,14 +136,14 @@ export default function useRuler(
         _scrollX = 0
       }
       ruler.scroll(_scrollX, _scrollY)
-      scrollTo(container, 2000, _scrollY)
+      scrollTo(container, _scrollX * _scrollZoomX, _scrollY)
     },
   )
   new Gesto(document.querySelector('.ruler__vertical') as HTMLElement).on(
     'drag',
     (e) => {
       _scrollY += e.deltaY
-      if (_scrollHeight > _designHeight) {
+      if (_scrollHeight > _rulerHeight) {
         // 向上
         if (e.deltaY < 0) {
           _scrollY = Math.min(_scrollY, 0)
@@ -154,9 +152,9 @@ export default function useRuler(
           }
         }
         else {
-          _scrollY = Math.min(_scrollY, _scrollHeight - _designHeight)
-          if (_scrollY > _scrollHeight - _designHeight) {
-            _scrollY = _scrollHeight - _designHeight
+          _scrollY = Math.min(_scrollY, _scrollHeight - _rulerHeight)
+          if (_scrollY > _scrollHeight - _rulerHeight) {
+            _scrollY = _scrollHeight - _rulerHeight
           }
         }
       }
@@ -164,7 +162,7 @@ export default function useRuler(
         _scrollY = 0
       }
       ruler.scroll(_scrollX, _scrollY)
-      scrollTo(container, _scrollX, _scrollY)
+      scrollTo(container, _scrollX * _scrollZoomX, _scrollY)
     },
   )
   const resetDesign = (designWidth: number, designHeight: number) => {

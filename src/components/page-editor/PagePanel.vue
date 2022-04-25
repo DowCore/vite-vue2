@@ -1,8 +1,8 @@
 <template>
-  <div>
-    <el-collapse v-model="activeNames">
+  <div class="panel">
+    <el-collapse v-model="activeName" accordion>
       <el-collapse-item title="页面设置" name="page">
-        <div class="panel">
+        <div class="panel-list">
           <div>
             <div class="panel-title">
               背景色
@@ -121,9 +121,13 @@
           <div
             v-for="element in layouts"
             :key="element.key"
-            class="layouts-item"
+            class="divide-x divide-dotted divide-blue-400 flex layouts-item border border-dotted border-blue-400"
           >
-            {{ element.key }}
+            <div
+              v-for="column in element.columns"
+              :key="column"
+              class="flex-1"
+            />
           </div>
         </draggable>
       </el-collapse-item>
@@ -138,7 +142,7 @@ interface Spacing {
   left: number
   right: number
 }
-const activeNames = ref<Array<string>>(['page', 'layout'])
+const activeName = ref<string>('page')
 const layout = ref<string>('grid')
 const rowGap = ref<string>('md')
 const padding = ref<Spacing>({ top: 24, left: 24, right: 24, bottom: 24 })
@@ -155,6 +159,30 @@ const layouts = ref<Array<any>>([
   {
     key: 'layout-column-3',
     columns: 3,
+  },
+  {
+    key: 'layout-column-4',
+    columns: 4,
+  },
+  {
+    key: 'layout-column-5',
+    columns: 5,
+  },
+  {
+    key: 'layout-column-6',
+    columns: 6,
+  },
+  {
+    key: 'layout-column-7',
+    columns: 7,
+  },
+  {
+    key: 'layout-column-8',
+    columns: 8,
+  },
+  {
+    key: 'layout-column-9',
+    columns: 9,
   },
 ])
 const _emit = defineEmits(['background-change', 'spacing-change', 'gap-change'])
@@ -177,9 +205,12 @@ watch([() => layout.value, () => rowGap.value], () => {
 </script>
 <style lang="scss" scoped>
 .panel {
-  display: grid;
-  grid-template-columns: 100%;
-  row-gap: 16px;
+  overflow-y: auto;
+  &-list {
+    display: grid;
+    grid-template-columns: 100%;
+    row-gap: 16px;
+  }
   &-title {
     font-size: 12px;
     color: #464c5b;
@@ -211,12 +242,13 @@ watch([() => layout.value, () => rowGap.value], () => {
   ::v-deep .el-radio {
     margin-right: 16px;
   }
-  .layouts{
+  .layouts {
     display: grid;
     grid-template-columns: 100%;
     padding: 16px 24px;
-    &-item{
-      height:22px;
+    row-gap: 8px;
+    &-item {
+      height: 36px;
     }
   }
 }

@@ -46,7 +46,7 @@
             </el-button>
           </el-button-group>
         </div>
-        <div class="page-editor-sidebar-layout margin-top--sm">
+        <div class="page-editor-sidebar-layout margin-top--sm flex-1">
           <div v-show="activeSiderbar === 'layout'">
             <div class="margin-bottom--md">
               <div class="panel-title">
@@ -106,9 +106,14 @@
                   <div
                     v-for="element in rows"
                     :key="element.key"
-                    class="page-area-row relative"
+                    class="page-area-row relative divide-x divide-dotted divide-blue-400 flex layouts-item border border-dotted border-blue-400"
                   >
-                    {{ element.key }}
+                    <div
+                      v-for="column in element.columns"
+                      :key="column"
+                      v-right-click:[{row:element.key,column:column}]="menuOptions"
+                      class="flex-1"
+                    />
                   </div>
                 </draggable>
               </div>
@@ -171,6 +176,21 @@ const style = ref<any>({
 const designWidth = ref<number>(1920)
 const designHeight = ref<number>(1080)
 const gap = ref<string>('md')
+const menuOptions = ref<any>({
+  text: [
+    '编辑列',
+    '编辑行',
+  ],
+  handler: {
+    checkingData(parameter: any) {
+      console.log(parameter)
+      console.log('查看资料点击事件')
+    },
+    removeItem() {
+      console.log('移除会话点击事件')
+    },
+  },
+})
 const pageClass = computed(() => {
   // 这样写是为了 tailwindcss 识别出class，切换时生效
   let spaceY = 'space-y-md'
@@ -187,7 +207,7 @@ const pageClass = computed(() => {
   }
   return style.value.display === 'flex' ? `flex-col ${spaceY}` : ''
 })
-const rows = ref<Array<any>>([{ key: 'row-1' }, { key: 'row-2' }])
+const rows = ref<Array<any>>([{ key: 'row-1', columns: 1 }])
 useEventBus('page-design-change').on((data: any) => {
   style.value.minWidth = `${data.width}px`
   style.value.minHeight = `${data.height}px`
@@ -199,7 +219,6 @@ const onAdd = () => {
   const myBus = useEventBus('reset-ruler')
   myBus.emit()
 }
-
 const pageBackgroundChange = (color: string) => {
   style.value['background-color'] = color
 }
@@ -235,11 +254,11 @@ onMounted(() => {
       'transform-origin': '0 0',
       'transform': `scale(${zoomX},1)`,
     }
-    nextTick(() => {
-      debounce(() => {
+    debounce(() => {
+      nextTick(() => {
         ruler.resetDesign(designWidth.value, designHeight.value)
-      }, 500)()
-    })
+      })
+    }, 500)()
   })
 })
 const pageGapChange = (rowGap: any) => {
@@ -305,8 +324,6 @@ const pageGapChange = (rowGap: any) => {
   }
 
   .page-area {
-    height: 1080px;
-    width: 1920px;
     position: relative;
     &-row {
       min-height: 24px;
@@ -344,7 +361,7 @@ const pageGapChange = (rowGap: any) => {
       min-height: 720px;
 
       &::-webkit-scrollbar {
-        //width: 0 !important;
+        width: 0 !important;
       }
     }
   }

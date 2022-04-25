@@ -17,7 +17,6 @@ declare module 'vue' {
     IconCarbonSave: typeof import('~icons/carbon/save')['default']
     Navbar: typeof import('./components/Navbar.vue')['default']
     PagePanel: typeof import('./components/page-editor/PagePanel.vue')['default']
-    Ruler: typeof import('./components/ruler/Ruler.vue')['default']
     Title: typeof import('./components/ruler/Title.vue')['default']
   }
 }
