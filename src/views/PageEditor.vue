@@ -107,11 +107,15 @@
                     v-for="element in rows"
                     :key="element.key"
                     class="page-area-row relative divide-x divide-dotted divide-blue-400 flex layouts-item border border-dotted border-blue-400"
+                    :style="element.style"
+                    :class="element.class"
                   >
                     <div
                       v-for="column in element.columns"
                       :key="column"
-                      v-right-click:[{row:element.key,column:column}]="menuOptions"
+                      v-right-click:[{row:element.key,column:column}]="
+                        menuOptions
+                      "
                       class="flex-1"
                     />
                   </div>
@@ -122,36 +126,375 @@
         </div>
       </div>
       <div class="page-editor-panel relative">
-        <div class="page-editor-sidebar-group">
+        <div class="page-editor-panel-group">
           <el-button-group>
             <el-button
               size="medium"
               class="page-editor-sidebar-group__button"
               :class="
-                activeSiderbar === 'layout'
+                activePanel === 'attribute'
                   ? 'page-editor-sidebar-group__button--active'
                   : ''
               "
-              @click="sidbarChange('layout')"
+              @click="panelChange('attribute')"
             >
-              布局
-            </el-button>
-            <el-button
-              size="medium"
-              class="page-editor-sidebar-group__button"
-              :class="
-                activeSiderbar === 'component'
-                  ? 'page-editor-sidebar-group__button--active'
-                  : ''
-              "
-              @click="sidbarChange('component')"
-            >
-              组件
+              属性
             </el-button>
           </el-button-group>
         </div>
-        <div class="page-editor-sidebar-layout margin-top--sm">
-          <div>grid</div>
+        <div class="page-editor-panel-layout margin-top--sm">
+          <el-collapse v-model="activeName" accordion>
+            <el-collapse-item title="行设计" name="row">
+              <div class="margin-bottom--md" style="padding-left: 16px">
+                <div>
+                  <div class="panel-title">
+                    行高
+                  </div>
+                  <div class="flex margin-left--md">
+                    <el-input-number
+                      v-model="rowAttribute.height"
+                      controls-position="right"
+                      :min="16"
+                      :step="16"
+                      :max="designHeight"
+                    />
+                  </div>
+                </div>
+                <div class="margin-top--md">
+                  <div class="panel-title">
+                    背景色
+                  </div>
+                  <div class="flex margin-left--md">
+                    <div class="flex">
+                      <div class="panel-color-picker">
+                        <color-picker v-model="color" default-color="#fff" />
+                      </div>
+                      <div class="margin-left--lg">
+                        {{ color }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="margin-top--md">
+                  <div class="panel-title">
+                    布局方式
+                  </div>
+                  <div class="flex margin-left--md">
+                    <el-radio v-model="rowAttribute.display" label="grid">
+                      Grid
+                    </el-radio>
+                    <el-radio v-model="rowAttribute.display" label="flex">
+                      Flex
+                    </el-radio>
+                  </div>
+                </div>
+                <div class="margin-top--md">
+                  <div class="panel-title">
+                    列间距
+                  </div>
+                  <div class="flex margin-left--md">
+                    <el-radio v-model="rowAttribute.space" label="lg">
+                      24px
+                    </el-radio>
+                    <el-radio v-model="rowAttribute.space" label="md">
+                      16px
+                    </el-radio>
+                    <el-radio v-model="rowAttribute.space" label="sm">
+                      8px
+                    </el-radio>
+                  </div>
+                </div>
+                <div class="margin-top--md">
+                  <div class="panel-title">
+                    外间距（单位：px）
+                  </div>
+                  <div class="flex">
+                    <div class="panel-attribute">
+                      左间距
+                    </div>
+                    <div class="panel-value">
+                      <el-input-number
+                        v-model="rowAttribute.marginLeft"
+                        controls-position="right"
+                        :min="0"
+                        :step="4"
+                        :max="24"
+                      />
+                    </div>
+                  </div>
+                  <div class="flex">
+                    <div class="panel-attribute">
+                      上间距
+                    </div>
+                    <div class="panel-value">
+                      <el-input-number
+                        v-model="rowAttribute.marginTop"
+                        controls-position="right"
+                        :min="0"
+                        :step="4"
+                        :max="24"
+                      />
+                    </div>
+                  </div>
+                  <div class="flex">
+                    <div class="panel-attribute">
+                      右间距
+                    </div>
+                    <div class="panel-value">
+                      <el-input-number
+                        v-model="rowAttribute.marginRight"
+                        controls-position="right"
+                        :min="0"
+                        :step="4"
+                        :max="24"
+                      />
+                    </div>
+                  </div>
+                  <div class="flex">
+                    <div class="panel-attribute">
+                      下间距
+                    </div>
+                    <div class="panel-value">
+                      <el-input-number
+                        v-model="rowAttribute.marginBottom"
+                        controls-position="right"
+                        :min="0"
+                        :step="4"
+                        :max="24"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class="margin-top--md">
+                  <div class="panel-title">
+                    内间距（单位：px）
+                  </div>
+                  <div class="flex">
+                    <div class="panel-attribute">
+                      左间距
+                    </div>
+                    <div class="panel-value">
+                      <el-input-number
+                        v-model="rowAttribute.paddingLeft"
+                        controls-position="right"
+                        :min="0"
+                        :step="4"
+                        :max="24"
+                      />
+                    </div>
+                  </div>
+                  <div class="flex">
+                    <div class="panel-attribute">
+                      上间距
+                    </div>
+                    <div class="panel-value">
+                      <el-input-number
+                        v-model="rowAttribute.paddingTop"
+                        controls-position="right"
+                        :min="0"
+                        :step="4"
+                        :max="24"
+                      />
+                    </div>
+                  </div>
+                  <div class="flex">
+                    <div class="panel-attribute">
+                      右间距
+                    </div>
+                    <div class="panel-value">
+                      <el-input-number
+                        v-model="rowAttribute.paddingRight"
+                        controls-position="right"
+                        :min="0"
+                        :step="4"
+                        :max="24"
+                      />
+                    </div>
+                  </div>
+                  <div class="flex">
+                    <div class="panel-attribute">
+                      下间距
+                    </div>
+                    <div class="panel-value">
+                      <el-input-number
+                        v-model="rowAttribute.paddingBottom"
+                        controls-position="right"
+                        :min="0"
+                        :step="4"
+                        :max="24"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </el-collapse-item>
+            <el-collapse-item title="列设计" name="column">
+              <div style="padding-left: 16px">
+                <div>
+                  <div class="panel-title">
+                    列宽
+                  </div>
+                  <div class="margin-left--md">
+                    <el-radio v-model="radio" label="1">
+                      均分
+                    </el-radio>
+                    <el-radio v-model="radio" label="2">
+                      固定值
+                    </el-radio>
+                    <el-radio v-model="radio" label="3">
+                      比例
+                    </el-radio>
+                  </div>
+                  <div class="flex margin-left--md margin-top--md">
+                    <el-input-number
+                      v-model="rowAttribute.height"
+                      controls-position="right"
+                      :min="16"
+                      :step="16"
+                      :max="designHeight"
+                    />
+                  </div>
+                </div>
+                <div class="margin-top--md">
+                  <div class="panel-title">
+                    背景色
+                  </div>
+                  <div class="flex margin-left--md">
+                    <div class="flex">
+                      <div class="panel-color-picker">
+                        <color-picker v-model="color" default-color="#fff" />
+                      </div>
+                      <div class="margin-left--lg">
+                        {{ color }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="margin-top--md">
+                  <div class="panel-title">
+                    外间距（单位：px）
+                  </div>
+                  <div class="flex">
+                    <div class="panel-attribute">
+                      左间距
+                    </div>
+                    <div class="panel-value">
+                      <el-input-number
+                        v-model="rowAttribute.marginLeft"
+                        controls-position="right"
+                        :min="0"
+                        :step="4"
+                        :max="24"
+                      />
+                    </div>
+                  </div>
+                  <div class="flex">
+                    <div class="panel-attribute">
+                      上间距
+                    </div>
+                    <div class="panel-value">
+                      <el-input-number
+                        v-model="rowAttribute.marginTop"
+                        controls-position="right"
+                        :min="0"
+                        :step="4"
+                        :max="24"
+                      />
+                    </div>
+                  </div>
+                  <div class="flex">
+                    <div class="panel-attribute">
+                      右间距
+                    </div>
+                    <div class="panel-value">
+                      <el-input-number
+                        v-model="rowAttribute.marginRight"
+                        controls-position="right"
+                        :min="0"
+                        :step="4"
+                        :max="24"
+                      />
+                    </div>
+                  </div>
+                  <div class="flex">
+                    <div class="panel-attribute">
+                      下间距
+                    </div>
+                    <div class="panel-value">
+                      <el-input-number
+                        v-model="rowAttribute.marginBottom"
+                        controls-position="right"
+                        :min="0"
+                        :step="4"
+                        :max="24"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class="margin-top--md">
+                  <div class="panel-title">
+                    内间距（单位：px）
+                  </div>
+                  <div class="flex">
+                    <div class="panel-attribute">
+                      左间距
+                    </div>
+                    <div class="panel-value">
+                      <el-input-number
+                        v-model="rowAttribute.paddingLeft"
+                        controls-position="right"
+                        :min="0"
+                        :step="4"
+                        :max="24"
+                      />
+                    </div>
+                  </div>
+                  <div class="flex">
+                    <div class="panel-attribute">
+                      上间距
+                    </div>
+                    <div class="panel-value">
+                      <el-input-number
+                        v-model="rowAttribute.paddingTop"
+                        controls-position="right"
+                        :min="0"
+                        :step="4"
+                        :max="24"
+                      />
+                    </div>
+                  </div>
+                  <div class="flex">
+                    <div class="panel-attribute">
+                      右间距
+                    </div>
+                    <div class="panel-value">
+                      <el-input-number
+                        v-model="rowAttribute.paddingRight"
+                        controls-position="right"
+                        :min="0"
+                        :step="4"
+                        :max="24"
+                      />
+                    </div>
+                  </div>
+                  <div class="flex">
+                    <div class="panel-attribute">
+                      下间距
+                    </div>
+                    <div class="panel-value">
+                      <el-input-number
+                        v-model="rowAttribute.paddingBottom"
+                        controls-position="right"
+                        :min="0"
+                        :step="4"
+                        :max="24"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </el-collapse-item>
+          </el-collapse>
         </div>
       </div>
     </div>
@@ -161,7 +504,6 @@
 import { assign, debounce, omit } from 'lodash'
 import draggable from 'vuedraggable'
 import useRuler from '@/utils/uses/useRuler'
-const activeSiderbar = ref('layout')
 const style = ref<any>({
   'background-color': '#f5f7f9',
   'padding-top': '24px',
@@ -173,14 +515,37 @@ const style = ref<any>({
   'display': 'grid',
   'row-gap': '16px',
 })
+interface RowAttribute {
+  height: number
+  display: string
+  marginTop: number
+  marginLeft: number
+  marginRight: number
+  marginBottom: number
+  paddingTop: number
+  paddingLeft: number
+  paddingRight: number
+  paddingBottom: number
+  space: string
+  backgroundColor: string
+}
+/* interface ColumnAttribute {
+  widthAdjust: string
+  marginTop: number
+  marginLeft: number
+  marginRight: number
+  marginBottom: number
+  paddingTop: number
+  paddingLeft: number
+  paddingRight: number
+  paddingBottom: number
+  backgroundColor: string
+} */
 const designWidth = ref<number>(1920)
 const designHeight = ref<number>(1080)
 const gap = ref<string>('md')
 const menuOptions = ref<any>({
-  text: [
-    '编辑列',
-    '编辑行',
-  ],
+  text: ['编辑列', '编辑行'],
   handler: {
     checkingData(parameter: any) {
       console.log(parameter)
@@ -191,34 +556,77 @@ const menuOptions = ref<any>({
     },
   },
 })
+const maps = new Map([
+  ['md', '16px'],
+  ['lg', '24px'],
+  ['sm', '8px'],
+])
+const spaceYMap = new Map([
+  ['md', 'space-y-md'],
+  ['sm', 'space-y-sm'],
+  ['lg', 'space-y-lg'],
+])
+const spaceXMap = new Map([
+  ['md', 'space-x-md'],
+  ['sm', 'space-x-sm'],
+  ['lg', 'space-x-lg'],
+])
 const pageClass = computed(() => {
   // 这样写是为了 tailwindcss 识别出class，切换时生效
-  let spaceY = 'space-y-md'
-  switch (gap.value) {
-    case 'md':
-      spaceY = 'space-y-md'
-      break
-    case 'sm':
-      spaceY = 'space-y-sm'
-      break
-    case 'lg':
-      spaceY = 'space-y-lg'
-      break
-  }
+  const spaceY = spaceYMap.get(gap.value)
   return style.value.display === 'flex' ? `flex-col ${spaceY}` : ''
 })
-const rows = ref<Array<any>>([{ key: 'row-1', columns: 1 }])
+const rowAttribute = ref<RowAttribute>({
+  height: 128,
+  paddingTop: 0,
+  paddingLeft: 0,
+  paddingRight: 0,
+  paddingBottom: 0,
+  display: 'grid',
+  marginTop: 0,
+  marginLeft: 0,
+  marginRight: 0,
+  marginBottom: 0,
+  space: 'md',
+  backgroundColor: '#fff',
+})
+const convertToStyle = (attrs: any) => {
+  let style = { ...attrs }
+  style = omit(style, 'space')
+  let _class = ''
+  if (attrs.display === 'grid') {
+    style.columnGap = maps.get(attrs.space)
+  }
+  else {
+    _class = spaceXMap.get(attrs.space) as string
+  }
+  style.height += 'px'
+  return {
+    class: _class,
+    style,
+  }
+}
+const rows = ref<Array<any>>([
+  { key: 'row-1', columns: [], ...convertToStyle(rowAttribute.value) },
+])
 useEventBus('page-design-change').on((data: any) => {
   style.value.minWidth = `${data.width}px`
   style.value.minHeight = `${data.height}px`
 })
+const activeSiderbar = ref('layout')
 const sidbarChange = (type: string) => {
   activeSiderbar.value = type
 }
+const activePanel = ref<string>('attribute')
+const panelChange = (panel: string) => {
+  // i
+}
+const activeName = ref<string>('row')
 const onAdd = () => {
   const myBus = useEventBus('reset-ruler')
   myBus.emit()
 }
+
 const pageBackgroundChange = (color: string) => {
   style.value['background-color'] = color
 }
@@ -262,11 +670,6 @@ onMounted(() => {
   })
 })
 const pageGapChange = (rowGap: any) => {
-  const maps = new Map([
-    ['md', '16px'],
-    ['lg', '24px'],
-    ['sm', '8px'],
-  ])
   let obj: any = { ...rowGap }
   obj = assign(style.value, { display: rowGap.display })
   gap.value = rowGap.gap
@@ -320,7 +723,27 @@ const pageGapChange = (rowGap: any) => {
     height: calc(100vh - 70px);
   }
   &-panel {
-    width: 272px;
+    width: 328px;
+    padding: 16px 16px;
+    background-color: #fff;
+    border-left: 1px solid #eaeefb;
+    &-group {
+      &__button {
+        width: 104px;
+        @include modifier('active') {
+          background: #3091f2 !important;
+          color: #fff !important;
+        }
+      }
+    }
+    .panel-color-picker {
+      height: 24px;
+      width: 24px;
+      border: 1px dashed #5cadff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
 
   .page-area {
@@ -356,7 +779,7 @@ const pageGapChange = (rowGap: any) => {
     &__content {
       position: relative;
       overflow: auto;
-      max-width: calc(100vw - 606px);
+      max-width: calc(100vw - 626px);
       min-width: 1280px;
       min-height: 720px;
 
@@ -385,6 +808,9 @@ const pageGapChange = (rowGap: any) => {
     font-size: 14px;
     line-height: 36px;
     height: 36px;
+  }
+  ::v-deep .el-radio {
+    margin-right: 16px;
   }
 }
 </style>
