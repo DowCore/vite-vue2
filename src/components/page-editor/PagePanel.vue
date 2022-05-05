@@ -23,11 +23,11 @@
               布局方式
             </div>
             <div class="flex margin-left--md">
-              <el-radio v-model="layout" label="grid">
-                Grid
-              </el-radio>
               <el-radio v-model="layout" label="flex">
                 Flex
+              </el-radio>
+              <el-radio v-model="layout" disabled label="grid">
+                Grid
               </el-radio>
             </div>
           </div>
@@ -136,6 +136,7 @@
 </template>
 <script lang="ts" setup>
 import draggable from 'vuedraggable'
+import { uniqueId } from 'lodash'
 interface Spacing {
   top: number
   bottom: number
@@ -143,7 +144,7 @@ interface Spacing {
   right: number
 }
 const activeName = ref<string>('page')
-const layout = ref<string>('grid')
+const layout = ref<string>('flex')
 const rowGap = ref<string>('md')
 const padding = ref<Spacing>({ top: 24, left: 24, right: 24, bottom: 24 })
 const color = ref<string>('#f5f7f9')
@@ -185,7 +186,7 @@ const layouts = ref<Array<any>>([
     columns: 9,
   },
 ])
-const _emit = defineEmits(['background-change', 'spacing-change', 'gap-change'])
+const _emit = defineEmits(['background-change', 'spacing-change', 'row-gap-change'])
 watch(
   () => color.value,
   () => {
@@ -199,9 +200,34 @@ watch(
   },
   { deep: true },
 )
-watch([() => layout.value, () => rowGap.value], () => {
-  _emit('gap-change', { display: layout.value, gap: rowGap.value })
+watch([() => rowGap.value], () => {
+  _emit('row-gap-change', rowGap.value)
 })
+const customClone = (row: any) => {
+  const cols = []
+  for (let i = 0; i < row.columns; i++) {
+    cols.push({ id: uniqueId('page_edit-column') })
+  }
+  const result = {
+    id: uniqueId('page_edit-row'),
+    columns: cols,
+    style: {
+      height: '128px',
+      paddingTop: 0,
+      paddingLeft: 0,
+      paddingRight: 0,
+      paddingBottom: 0,
+      display: 'grid',
+      marginTop: 0,
+      marginLeft: 0,
+      marginRight: 0,
+      marginBottom: 0,
+      backgroundColor: '#fff',
+      columnGap: '16px',
+    },
+  }
+  return result
+}
 </script>
 <style lang="scss" scoped>
 .panel {

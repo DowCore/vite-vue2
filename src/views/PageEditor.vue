@@ -84,7 +84,7 @@
             <PagePanel
               @background-change="pageBackgroundChange"
               @spacing-change="pageSpacingChange"
-              @gap-change="pageGapChange"
+              @row-gap-change="pageRowGapChange"
             />
           </div>
         </div>
@@ -99,8 +99,7 @@
                 <draggable
                   :list="rows"
                   group="layouts"
-                  class="page-area"
-                  :class="pageClass"
+                  class="page-area flex flex-col"
                   :style="style"
                 >
                   <div
@@ -112,11 +111,12 @@
                   >
                     <div
                       v-for="column in element.columns"
-                      :key="column"
+                      :key="column.id"
                       v-right-click:[{row:element.key,column:column}]="
                         menuOptions
                       "
-                      class="flex-1"
+                      :style="column.style"
+                      :class="column.class"
                     />
                   </div>
                 </draggable>
@@ -501,9 +501,10 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { assign, debounce, omit } from 'lodash'
+import { assign, debounce, omit, uniqueId } from 'lodash'
 import draggable from 'vuedraggable'
 import useRuler from '@/utils/uses/useRuler'
+
 const style = ref<any>({
   'background-color': '#f5f7f9',
   'padding-top': '24px',
@@ -512,8 +513,7 @@ const style = ref<any>({
   'padding-bottom': '24px',
   'minWidth': '1920px',
   'minHeight': '1080px',
-  'display': 'grid',
-  'row-gap': '16px',
+  'display': 'flex',
 })
 interface RowAttribute {
   height: number
@@ -543,16 +543,20 @@ interface RowAttribute {
 } */
 const designWidth = ref<number>(1920)
 const designHeight = ref<number>(1080)
-const gap = ref<string>('md')
 const menuOptions = ref<any>({
-  text: ['编辑列', '编辑行'],
+  text: ['编辑列', '新增列', '删除列', '编辑行'],
   handler: {
-    checkingData(parameter: any) {
-      console.log(parameter)
-      console.log('查看资料点击事件')
+    editColumn() {
+
     },
-    removeItem() {
-      console.log('移除会话点击事件')
+    addColumn() {
+
+    },
+    deleteColumn() {
+
+    },
+    editRow() {
+
     },
   },
 })
@@ -561,21 +565,16 @@ const maps = new Map([
   ['lg', '24px'],
   ['sm', '8px'],
 ])
-const spaceYMap = new Map([
+/* const spaceYMap = new Map([
   ['md', 'space-y-md'],
   ['sm', 'space-y-sm'],
   ['lg', 'space-y-lg'],
-])
+]) */
 const spaceXMap = new Map([
   ['md', 'space-x-md'],
   ['sm', 'space-x-sm'],
   ['lg', 'space-x-lg'],
 ])
-const pageClass = computed(() => {
-  // 这样写是为了 tailwindcss 识别出class，切换时生效
-  const spaceY = spaceYMap.get(gap.value)
-  return style.value.display === 'flex' ? `flex-col ${spaceY}` : ''
-})
 const rowAttribute = ref<RowAttribute>({
   height: 128,
   paddingTop: 0,
@@ -607,7 +606,7 @@ const convertToStyle = (attrs: any) => {
   }
 }
 const rows = ref<Array<any>>([
-  { key: 'row-1', columns: [], ...convertToStyle(rowAttribute.value) },
+  { key: 'row-1', columns: [{ id: uniqueId('page_edit-column') }], ...convertToStyle(rowAttribute.value) },
 ])
 useEventBus('page-design-change').on((data: any) => {
   style.value.minWidth = `${data.width}px`
@@ -669,18 +668,26 @@ onMounted(() => {
     }, 500)()
   })
 })
-const pageGapChange = (rowGap: any) => {
-  let obj: any = { ...rowGap }
-  obj = assign(style.value, { display: rowGap.display })
-  gap.value = rowGap.gap
-  if (rowGap.display === 'flex') {
-    obj = omit(obj, 'row-gap')
-  }
-  else {
-    obj['row-gap'] = maps.get(rowGap.gap)
-  }
-  style.value = obj
+let rowGap = 'md'
+const setRowGap = (gap: string) => {
+  rows.value.forEach((item, index) => {
+    if (index !== 0) {
+      item.style.marginTop = gap
+    }
+    else {
+      item.style.marginTop = '0'
+    }
+  })
 }
+const pageRowGapChange = (gap: any) => {
+  rowGap = gap
+  console.log(gap, '变化', maps.get(rowGap))
+  setRowGap(maps.get(rowGap) as string)
+}
+const color = ref<string>('#ffffff')
+watch(() => rows.value, () => {
+  setRowGap(maps.get(rowGap) as string)
+})
 </script>
 <style lang="scss" scoped>
 .page-editor {
