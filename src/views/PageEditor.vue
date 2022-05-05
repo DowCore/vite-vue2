@@ -339,7 +339,7 @@
                       均分
                     </el-radio>
                     <el-radio v-model="radio" label="2">
-                      固定值
+                      定值
                     </el-radio>
                     <el-radio v-model="radio" label="3">
                       比例
@@ -546,18 +546,10 @@ const designHeight = ref<number>(1080)
 const menuOptions = ref<any>({
   text: ['编辑列', '新增列', '删除列', '编辑行'],
   handler: {
-    editColumn() {
-
-    },
-    addColumn() {
-
-    },
-    deleteColumn() {
-
-    },
-    editRow() {
-
-    },
+    editColumn() {},
+    addColumn() {},
+    deleteColumn() {},
+    editRow() {},
   },
 })
 const maps = new Map([
@@ -606,7 +598,11 @@ const convertToStyle = (attrs: any) => {
   }
 }
 const rows = ref<Array<any>>([
-  { key: 'row-1', columns: [{ id: uniqueId('page_edit-column') }], ...convertToStyle(rowAttribute.value) },
+  {
+    key: 'row-1',
+    columns: [{ id: uniqueId('page_edit-column') }],
+    ...convertToStyle(rowAttribute.value),
+  },
 ])
 useEventBus('page-design-change').on((data: any) => {
   style.value.minWidth = `${data.width}px`
@@ -685,9 +681,12 @@ const pageRowGapChange = (gap: any) => {
   setRowGap(maps.get(rowGap) as string)
 }
 const color = ref<string>('#ffffff')
-watch(() => rows.value, () => {
-  setRowGap(maps.get(rowGap) as string)
-})
+watch(
+  () => rows.value,
+  () => {
+    setRowGap(maps.get(rowGap) as string)
+  },
+)
 </script>
 <style lang="scss" scoped>
 .page-editor {

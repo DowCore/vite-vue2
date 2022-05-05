@@ -1,43 +1,47 @@
 .clearfix::after {
-    content: "";
-    display: block;
-    clear: both;
-  }
+  content: '';
+  display: block;
+  clear: both;
+}
 .margin-top {
-    @include modifier("sm") {
-        margin-top: $space-sm;
-    }
-    @include modifier("md") {
-        margin-top: $space-md;
-    }
-    @include modifier("lg") {
-        margin-top: $space-lg;
-    }
+  @include modifier('sm') {
+    margin-top: $space-sm;
+  }
+  @include modifier('md') {
+    margin-top: $space-md;
+  }
+  @include modifier('lg') {
+    margin-top: $space-lg;
+  }
 }
 
 .margin-bottom {
-    @include modifier("sm") {
-        margin-bottom: $space-sm;
-    }
-    @include modifier("md") {
-        margin-bottom: $space-md;
-    }
-    @include modifier("lg") {
-        margin-bottom: $space-lg;
-    }
+  @include modifier('sm') {
+    margin-bottom: $space-sm;
+  }
+  @include modifier('md') {
+    margin-bottom: $space-md;
+  }
+  @include modifier('lg') {
+    margin-bottom: $space-lg;
+  }
 }
 .margin-left {
-    @include modifier("sm") {
-        margin-left: $space-sm;
-    }
-    @include modifier("md") {
-        margin-left: $space-md;
-    }
-    @include modifier("lg") {
-        margin-left: $space-lg;
-    }
+  @include modifier('sm') {
+    margin-left: $space-sm;
+  }
+  @include modifier('md') {
+    margin-left: $space-md;
+  }
+  @include modifier('lg') {
+    margin-left: $space-lg;
+  }
 }
 .app-icon-svg {
-    width: 1.2em;
-    height: 1.2em;
+  width: 1.2em;
+  height: 1.2em;
+}
+
+.right-menu {
+  background-color: #f5f7f9 !important;
 }
