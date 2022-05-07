@@ -16,7 +16,6 @@
         class="inline-flex items-center mt-3 text-green-500"
       >
         Learn More 34433455
-        <MdiArrowRight class="ml-1" />
       </a>
     </div>
   </div>

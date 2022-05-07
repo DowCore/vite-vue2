@@ -14,6 +14,7 @@ interface Ruler {
   lineColor?: string
 }
 function createRuler(ruler: Ruler) {
+  console.log(ruler, '创建刻度尺')
   const horizontal = new Guides(ruler.horizontal, {
     type: 'horizontal',
     rulerStyle: {

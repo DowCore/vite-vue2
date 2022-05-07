@@ -90,7 +90,7 @@
         </div>
       </div>
       <div class="page-editor-content flex-1">
-        <div class="ruler">
+        <div ref="editor" class="ruler">
           <div class="ruler__horizontal relative" />
           <div class="flex flex-1 ruler-area">
             <div class="ruler__vertical" />
@@ -106,18 +106,19 @@
                     v-for="element in rows"
                     :key="element.key"
                     class="page-area-row relative divide-x divide-dotted divide-blue-400 flex layouts-item border border-dotted border-blue-400"
-                    :style="element.style"
-                    :class="element.class"
+                    :style="toRowStyle(element)"
+                    :class="toRowClass(element)"
                   >
                     <div
                       v-for="column in element.columns"
-                      :key="column.id"
-                      v-right-click:[{row:element.key,column:column}]="
+                      :key="column.key"
+                      v-right-click:[{row:element.key,column:column.key}]="
                         menuOptions
                       "
-                      :style="column.style"
-                      :class="column.class"
-                    />
+                      :style="toColumnStyle(element, column)"
+                    >
+                      <component :is="Coms[column.component]" />
+                    </div>
                   </div>
                 </draggable>
               </div>
@@ -125,6 +126,8 @@
           </div>
         </div>
       </div>
+    </div>
+    <el-drawer :visible.sync="drawer" direction="rtl">
       <div class="page-editor-panel relative">
         <div class="page-editor-panel-group">
           <el-button-group>
@@ -167,10 +170,13 @@
                   <div class="flex margin-left--md">
                     <div class="flex">
                       <div class="panel-color-picker">
-                        <color-picker v-model="color" default-color="#fff" />
+                        <color-picker
+                          v-model="rowAttribute.backgroundColor"
+                          default-color="#fffff"
+                        />
                       </div>
                       <div class="margin-left--lg">
-                        {{ color }}
+                        {{ rowAttribute.backgroundColor }}
                       </div>
                     </div>
                   </div>
@@ -335,22 +341,34 @@
                     列宽
                   </div>
                   <div class="margin-left--md">
-                    <el-radio v-model="radio" label="1">
+                    <el-radio
+                      v-model="columnAttribute.distribution"
+                      label="equal"
+                    >
                       均分
                     </el-radio>
-                    <el-radio v-model="radio" label="2">
+                    <el-radio
+                      v-model="columnAttribute.distribution"
+                      label="fixed"
+                    >
                       定值
                     </el-radio>
-                    <el-radio v-model="radio" label="3">
+                    <el-radio
+                      v-model="columnAttribute.distribution"
+                      label="scale"
+                    >
                       比例
                     </el-radio>
                   </div>
-                  <div class="flex margin-left--md margin-top--md">
+                  <div
+                    v-show="columnAttribute.distribution !== 'equal'"
+                    class="flex margin-left--md margin-top--md"
+                  >
                     <el-input-number
-                      v-model="rowAttribute.height"
+                      v-model="columnAttribute.width"
                       controls-position="right"
-                      :min="16"
-                      :step="16"
+                      :min="columnAttribute.distribution === 'fixed' ? 16 : 1"
+                      :step="1"
                       :max="designHeight"
                     />
                   </div>
@@ -362,10 +380,13 @@
                   <div class="flex margin-left--md">
                     <div class="flex">
                       <div class="panel-color-picker">
-                        <color-picker v-model="color" default-color="#fff" />
+                        <color-picker
+                          v-model="columnAttribute.backgroundColor"
+                          default-color="#fffff"
+                        />
                       </div>
                       <div class="margin-left--lg">
-                        {{ color }}
+                        {{ columnAttribute.backgroundColor }}
                       </div>
                     </div>
                   </div>
@@ -380,7 +401,7 @@
                     </div>
                     <div class="panel-value">
                       <el-input-number
-                        v-model="rowAttribute.marginLeft"
+                        v-model="columnAttribute.marginLeft"
                         controls-position="right"
                         :min="0"
                         :step="4"
@@ -394,7 +415,7 @@
                     </div>
                     <div class="panel-value">
                       <el-input-number
-                        v-model="rowAttribute.marginTop"
+                        v-model="columnAttribute.marginTop"
                         controls-position="right"
                         :min="0"
                         :step="4"
@@ -408,7 +429,7 @@
                     </div>
                     <div class="panel-value">
                       <el-input-number
-                        v-model="rowAttribute.marginRight"
+                        v-model="columnAttribute.marginRight"
                         controls-position="right"
                         :min="0"
                         :step="4"
@@ -422,7 +443,7 @@
                     </div>
                     <div class="panel-value">
                       <el-input-number
-                        v-model="rowAttribute.marginBottom"
+                        v-model="columnAttribute.marginBottom"
                         controls-position="right"
                         :min="0"
                         :step="4"
@@ -441,7 +462,7 @@
                     </div>
                     <div class="panel-value">
                       <el-input-number
-                        v-model="rowAttribute.paddingLeft"
+                        v-model="columnAttribute.paddingLeft"
                         controls-position="right"
                         :min="0"
                         :step="4"
@@ -455,7 +476,7 @@
                     </div>
                     <div class="panel-value">
                       <el-input-number
-                        v-model="rowAttribute.paddingTop"
+                        v-model="columnAttribute.paddingTop"
                         controls-position="right"
                         :min="0"
                         :step="4"
@@ -469,7 +490,7 @@
                     </div>
                     <div class="panel-value">
                       <el-input-number
-                        v-model="rowAttribute.paddingRight"
+                        v-model="columnAttribute.paddingRight"
                         controls-position="right"
                         :min="0"
                         :step="4"
@@ -483,7 +504,7 @@
                     </div>
                     <div class="panel-value">
                       <el-input-number
-                        v-model="rowAttribute.paddingBottom"
+                        v-model="columnAttribute.paddingBottom"
                         controls-position="right"
                         :min="0"
                         :step="4"
@@ -497,14 +518,22 @@
           </el-collapse>
         </div>
       </div>
-    </div>
+    </el-drawer>
   </div>
 </template>
 <script lang="ts" setup>
-import { assign, debounce, omit, uniqueId } from 'lodash'
+import { assign, cloneDeep, debounce, uniqueId } from 'lodash'
 import draggable from 'vuedraggable'
+import { useEventListener } from '@vueuse/core'
+import { Message } from 'element-ui'
 import useRuler from '@/utils/uses/useRuler'
-
+import type {
+  Column,
+  ColumnAttribute,
+  Row,
+  RowAttribute,
+} from '@/types/PageEdit'
+import { toColumnStyle, toRowClass, toRowStyle } from '@/types/PageEdit'
 const style = ref<any>({
   'background-color': '#f5f7f9',
   'padding-top': '24px',
@@ -515,58 +544,6 @@ const style = ref<any>({
   'minHeight': '1080px',
   'display': 'flex',
 })
-interface RowAttribute {
-  height: number
-  display: string
-  marginTop: number
-  marginLeft: number
-  marginRight: number
-  marginBottom: number
-  paddingTop: number
-  paddingLeft: number
-  paddingRight: number
-  paddingBottom: number
-  space: string
-  backgroundColor: string
-}
-/* interface ColumnAttribute {
-  widthAdjust: string
-  marginTop: number
-  marginLeft: number
-  marginRight: number
-  marginBottom: number
-  paddingTop: number
-  paddingLeft: number
-  paddingRight: number
-  paddingBottom: number
-  backgroundColor: string
-} */
-const designWidth = ref<number>(1920)
-const designHeight = ref<number>(1080)
-const menuOptions = ref<any>({
-  text: ['编辑列', '新增列', '删除列', '编辑行'],
-  handler: {
-    editColumn() {},
-    addColumn() {},
-    deleteColumn() {},
-    editRow() {},
-  },
-})
-const maps = new Map([
-  ['md', '16px'],
-  ['lg', '24px'],
-  ['sm', '8px'],
-])
-/* const spaceYMap = new Map([
-  ['md', 'space-y-md'],
-  ['sm', 'space-y-sm'],
-  ['lg', 'space-y-lg'],
-]) */
-const spaceXMap = new Map([
-  ['md', 'space-x-md'],
-  ['sm', 'space-x-sm'],
-  ['lg', 'space-x-lg'],
-])
 const rowAttribute = ref<RowAttribute>({
   height: 128,
   paddingTop: 0,
@@ -579,30 +556,138 @@ const rowAttribute = ref<RowAttribute>({
   marginRight: 0,
   marginBottom: 0,
   space: 'md',
-  backgroundColor: '#fff',
+  backgroundColor: '#ffffff',
 })
-const convertToStyle = (attrs: any) => {
-  let style = { ...attrs }
-  style = omit(style, 'space')
-  let _class = ''
-  if (attrs.display === 'grid') {
-    style.columnGap = maps.get(attrs.space)
-  }
-  else {
-    _class = spaceXMap.get(attrs.space) as string
-  }
-  style.height += 'px'
-  return {
-    class: _class,
-    style,
-  }
-}
-const rows = ref<Array<any>>([
+const rows = ref<Array<Row>>([
   {
     key: 'row-1',
-    columns: [{ id: uniqueId('page_edit-column') }],
-    ...convertToStyle(rowAttribute.value),
+    fixed: 1,
+    columns: [
+      {
+        key: uniqueId('page_edit-column'),
+        attributes: {
+          distribution: 'equal',
+          marginTop: 0,
+          marginLeft: 0,
+          marginRight: 0,
+          marginBottom: 0,
+          paddingTop: 0,
+          paddingLeft: 0,
+          paddingRight: 0,
+          paddingBottom: 0,
+          backgroundColor: '#fffff',
+        },
+        component: 'Test',
+      },
+    ],
+    attributes: { ...rowAttribute.value },
   },
+])
+const columnAttribute = ref<ColumnAttribute>({
+  distribution: 'equal',
+  marginTop: 0,
+  marginLeft: 0,
+  marginRight: 0,
+  marginBottom: 0,
+  paddingTop: 0,
+  paddingLeft: 0,
+  paddingRight: 0,
+  paddingBottom: 0,
+  backgroundColor: '#ffffff',
+})
+const Test = defineAsyncComponent(() => import(`@/components/Test.vue`))
+const Coms = ref({
+  Test,
+})
+const designWidth = ref<number>(1920)
+const designHeight = ref<number>(1080)
+const drawer = ref<Boolean>(false)
+const editor = ref<HTMLElement>()
+let current: any = ''
+const menuOptions = ref<any>({
+  text: ['编辑列', '新增列', '删除列', '设置组件', '删除行'],
+  handler: {
+    editColumn(data: any) {
+      current = data
+      drawer.value = true
+      const row = rows.value.find((t) => {
+        return t.key === current.row
+      }) as Row
+      rows.value.forEach((t) => {
+        t.isSelected = false
+        t.columns.forEach((c) => {
+          c.isSelected = false
+        })
+      })
+      rowAttribute.value = { ...row.attributes }
+      row.isSelected = true
+      const col = row.columns.find((t) => {
+        return t.key === current.column
+      }) as Column
+      columnAttribute.value = { ...col.attributes }
+      col.isSelected = true
+    },
+    addColumn(data: any) {
+      current = data
+      const row = rows.value.find((t) => {
+        return t.key === current.row
+      }) as Row
+      rows.value.forEach((t) => {
+        t.isSelected = false
+        t.columns.forEach((c) => {
+          c.isSelected = false
+        })
+      })
+      rowAttribute.value = { ...row.attributes }
+      row.isSelected = true
+      const col: Column = {
+        key: uniqueId('page_edit-column'),
+        attributes: {
+          distribution: 'equal',
+          marginTop: 0,
+          marginLeft: 0,
+          marginRight: 0,
+          marginBottom: 0,
+          paddingTop: 0,
+          paddingLeft: 0,
+          paddingRight: 0,
+          paddingBottom: 0,
+          backgroundColor: '#ffffff',
+        },
+      }
+      columnAttribute.value = { ...col.attributes }
+      col.isSelected = true
+      current.column = col.key
+      row.columns.push(col)
+      drawer.value = true
+    },
+    deleteColumn(data: any) {
+      const row = rows.value.find((t) => {
+        return t.key === data.row
+      }) as Row
+      if (row.columns.length > 1) {
+        const index = row.columns.findIndex((t) => {
+          return t.key === current.column
+        })
+        row.columns.splice(index, 1)
+      }
+      else {
+        Message.error('不能删除唯一的单元格')
+      }
+    },
+    setComponent() {},
+    deleteRow(data: any) {
+      const index = rows.value.findIndex((t) => {
+        return t.key === data.row
+      })
+      rows.value.splice(index, 1)
+    },
+  },
+})
+const maps = new Map([
+  ['md', '16px'],
+  ['lg', '24px'],
+  ['sm', '8px'],
 ])
 useEventBus('page-design-change').on((data: any) => {
   style.value.minWidth = `${data.width}px`
@@ -642,6 +727,15 @@ onMounted(() => {
     'transform-origin': '0 0',
     'transform': `scale(${zoomX},1)`,
   }
+  useEventListener(editor, 'mouseup', () => {
+    rows.value.forEach((t) => {
+      t.isSelected = false
+      t.columns.forEach((c) => {
+        c.isSelected = false
+      })
+    })
+    rows.value = cloneDeep(rows.value)
+  })
   let ruler: any = null
   nextTick(() => {
     ruler = useRuler(
@@ -668,24 +762,61 @@ let rowGap = 'md'
 const setRowGap = (gap: string) => {
   rows.value.forEach((item, index) => {
     if (index !== 0) {
-      item.style.marginTop = gap
+      item.attributes.marginTop = parseInt(gap)
     }
     else {
-      item.style.marginTop = '0'
+      item.attributes.marginTop = 0
     }
   })
 }
 const pageRowGapChange = (gap: any) => {
   rowGap = gap
-  console.log(gap, '变化', maps.get(rowGap))
   setRowGap(maps.get(rowGap) as string)
 }
-const color = ref<string>('#ffffff')
 watch(
   () => rows.value,
   () => {
     setRowGap(maps.get(rowGap) as string)
   },
+)
+watch(
+  () => columnAttribute.value.distribution,
+  () => {
+    switch (columnAttribute.value.distribution) {
+      case 'fixed':
+        columnAttribute.value.width = 128
+        break
+      case 'scale':
+        columnAttribute.value.width = 1
+        break
+      default:
+        columnAttribute.value.width = undefined
+        break
+    }
+  },
+)
+watch(
+  () => columnAttribute.value,
+  () => {
+    const row = rows.value.find((t) => {
+      return t.key === current.row
+    }) as Row
+    const col = row.columns.find((t) => {
+      return t.key === current.column
+    }) as Column
+    col.attributes = { ...columnAttribute.value }
+  },
+  { deep: true },
+)
+watch(
+  () => rowAttribute.value,
+  () => {
+    const row = rows.value.find((t) => {
+      return t.key === current.row
+    }) as Row
+    row.attributes = { ...rowAttribute.value }
+  },
+  { deep: true },
 )
 </script>
 <style lang="scss" scoped>
@@ -725,12 +856,11 @@ watch(
   }
   &-content {
     position: relative;
-    width: 100%;
     height: calc(100vh - 70px);
+    padding-right: 24px;
   }
   &-panel {
-    width: 328px;
-    padding: 16px 16px;
+    padding: 16px 24px;
     background-color: #fff;
     border-left: 1px solid #eaeefb;
     &-group {
@@ -767,7 +897,6 @@ watch(
     flex-direction: column;
     width: 100%;
     height: 100%;
-
     &__horizontal {
       height: 30px;
     }
@@ -785,7 +914,7 @@ watch(
     &__content {
       position: relative;
       overflow: auto;
-      max-width: calc(100vw - 626px);
+      max-width: calc(100vw - 368px);
       min-width: 1280px;
       min-height: 720px;
 
@@ -817,6 +946,10 @@ watch(
   }
   ::v-deep .el-radio {
     margin-right: 16px;
+  }
+
+  .row-active {
+    border: 1px solid #3091f2 !important;
   }
 }
 </style>

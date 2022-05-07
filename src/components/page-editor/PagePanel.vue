@@ -137,6 +137,7 @@
 <script lang="ts" setup>
 import draggable from 'vuedraggable'
 import { uniqueId } from 'lodash'
+import type { Row } from '@/types/PageEdit'
 interface Spacing {
   top: number
   bottom: number
@@ -186,7 +187,11 @@ const layouts = ref<Array<any>>([
     columns: 9,
   },
 ])
-const _emit = defineEmits(['background-change', 'spacing-change', 'row-gap-change'])
+const _emit = defineEmits([
+  'background-change',
+  'spacing-change',
+  'row-gap-change',
+])
 watch(
   () => color.value,
   () => {
@@ -206,13 +211,28 @@ watch([() => rowGap.value], () => {
 const customClone = (row: any) => {
   const cols = []
   for (let i = 0; i < row.columns; i++) {
-    cols.push({ id: uniqueId('page_edit-column') })
+    cols.push({
+      key: uniqueId('page_edit-column'),
+      attributes: {
+        distribution: 'equal',
+        marginTop: 0,
+        marginLeft: 0,
+        marginRight: 0,
+        marginBottom: 0,
+        paddingTop: 0,
+        paddingLeft: 0,
+        paddingRight: 0,
+        paddingBottom: 0,
+        backgroundColor: '#ffffff',
+      },
+    })
   }
-  const result = {
-    id: uniqueId('page_edit-row'),
+  const result: Row = {
+    key: uniqueId('page_edit-row'),
     columns: cols,
-    style: {
-      height: '128px',
+    fixed: row.column,
+    attributes: {
+      height: 128,
       paddingTop: 0,
       paddingLeft: 0,
       paddingRight: 0,
@@ -222,8 +242,8 @@ const customClone = (row: any) => {
       marginLeft: 0,
       marginRight: 0,
       marginBottom: 0,
-      backgroundColor: '#fff',
-      columnGap: '16px',
+      space: 'md',
+      backgroundColor: '#ffffff',
     },
   }
   return result
