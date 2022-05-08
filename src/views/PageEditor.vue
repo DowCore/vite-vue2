@@ -560,7 +560,7 @@ const rowAttribute = ref<RowAttribute>({
 })
 const rows = ref<Array<Row>>([
   {
-    key: 'row-1',
+    key: uniqueId('page_editor-row'),
     fixed: 1,
     columns: [
       {
@@ -703,8 +703,31 @@ const panelChange = (panel: string) => {
 }
 const activeName = ref<string>('row')
 const onAdd = () => {
-  const myBus = useEventBus('reset-ruler')
-  myBus.emit()
+  /*const myBus = useEventBus('reset-ruler')
+  myBus.emit()*/
+  rows.value.push({
+    key: uniqueId('page_editor-row'),
+    fixed: 1,
+    columns: [
+      {
+        key: uniqueId('page_edit-column'),
+        attributes: {
+          distribution: 'equal',
+          marginTop: 0,
+          marginLeft: 0,
+          marginRight: 0,
+          marginBottom: 0,
+          paddingTop: 0,
+          paddingLeft: 0,
+          paddingRight: 0,
+          paddingBottom: 0,
+          backgroundColor: '#fffff',
+        },
+        component: 'Test',
+      },
+    ],
+    attributes: { ...rowAttribute.value },
+  })
 }
 
 const pageBackgroundChange = (color: string) => {
