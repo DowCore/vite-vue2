@@ -39,7 +39,7 @@ export const routes: RouteConfig[] = [
     name: '组件编辑',
     // NOTE: you can also apply meta information
     // meta: {authRequired: false }
-    component: () => import('@/views/PageView.vue'),
+    component: () => import('@/views/ComponentEditor.vue'),
     // NOTE: you can also lazy-load the component
     // component: () => import("@/views/About.vue")
   },

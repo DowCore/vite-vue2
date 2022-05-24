@@ -17,6 +17,7 @@ declare module 'vue' {
     IconCarbonAccessibilityColor: typeof import('~icons/carbon/accessibility-color')['default']
     IconCarbonBookmarkAdd: typeof import('~icons/carbon/bookmark-add')['default']
     IconCarbonSave: typeof import('~icons/carbon/save')['default']
+    LabelValue: typeof import('./components/label-value/LabelValue.vue')['default']
     Navbar: typeof import('./components/Navbar.vue')['default']
     PagePanel: typeof import('./components/page-editor/PagePanel.vue')['default']
     Test: typeof import('./components/Test.vue')['default']
