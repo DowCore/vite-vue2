@@ -165,5 +165,6 @@ module.exports = {
     }],
     'array-bracket-spacing': [2, 'never'],
     'vue/no-deprecated-v-bind-sync': 0,
+    'vue/no-deprecated-slot-attribute': 0,
   },
 }

@@ -2,7 +2,12 @@
   <div class="page-editor">
     <div class="page-editor-tool flex space-x-md">
       <el-tooltip content="预览">
-        <icon-carbon-accessibility-color class="page-editor-tool__button" />
+        <div
+          class="page-editor-tool__button page-editor-tool__button--active"
+          @click="onPreview"
+        >
+          <icon-carbon-accessibility-color />
+        </div>
       </el-tooltip>
       <el-tooltip content="保存">
         <icon-carbon-save class="page-editor-tool__button" />
@@ -87,6 +92,9 @@
               @row-gap-change="pageRowGapChange"
             />
           </div>
+          <div v-show="activeSiderbar === 'component'">
+            <component-list @on-drage-end="onDragEnd" />
+          </div>
         </div>
       </div>
       <div class="page-editor-content flex-1">
@@ -115,9 +123,10 @@
                       v-right-click:[{row:element.key,column:column.key}]="
                         menuOptions
                       "
+                      class="page-area-column"
                       :style="toColumnStyle(element, column)"
                     >
-                      <component :is="Coms[column.component]" />
+                      <component :is="column.component.component" v-if="column.component" />
                     </div>
                   </div>
                 </draggable>
@@ -533,7 +542,7 @@ import type {
   Row,
   RowAttribute,
 } from '@/types/PageEdit'
-import { toColumnStyle, toRowClass, toRowStyle } from '@/types/PageEdit'
+import { toColumnStyle, toRowClass, toRowStyle } from '@/utils/PageEdit'
 const style = ref<any>({
   'background-color': '#f5f7f9',
   'padding-top': '24px',
@@ -577,7 +586,6 @@ const rows = ref<Array<Row>>([
           paddingBottom: 0,
           backgroundColor: '#fffff',
         },
-        component: 'Test',
       },
     ],
     attributes: { ...rowAttribute.value },
@@ -595,15 +603,12 @@ const columnAttribute = ref<ColumnAttribute>({
   paddingBottom: 0,
   backgroundColor: '#ffffff',
 })
-const Test = defineAsyncComponent(() => import(`@/components/Test.vue`))
-const Coms = ref({
-  Test,
-})
 const designWidth = ref<number>(1920)
 const designHeight = ref<number>(1080)
 const drawer = ref<Boolean>(false)
 const editor = ref<HTMLElement>()
 let current: any = ''
+const activeSiderbar = ref('layout')
 const menuOptions = ref<any>({
   text: ['编辑列', '新增列', '删除列', '设置组件', '删除行'],
   handler: {
@@ -675,7 +680,9 @@ const menuOptions = ref<any>({
         Message.error('不能删除唯一的单元格')
       }
     },
-    setComponent() {},
+    setComponent() {
+      activeSiderbar.value = 'component'
+    },
     deleteRow(data: any) {
       const index = rows.value.findIndex((t) => {
         return t.key === data.row
@@ -693,7 +700,6 @@ useEventBus('page-design-change').on((data: any) => {
   style.value.minWidth = `${data.width}px`
   style.value.minHeight = `${data.height}px`
 })
-const activeSiderbar = ref('layout')
 const sidbarChange = (type: string) => {
   activeSiderbar.value = type
 }
@@ -703,7 +709,7 @@ const panelChange = (panel: string) => {
 }
 const activeName = ref<string>('row')
 const onAdd = () => {
-  /*const myBus = useEventBus('reset-ruler')
+  /* const myBus = useEventBus('reset-ruler')
   myBus.emit()*/
   rows.value.push({
     key: uniqueId('page_editor-row'),
@@ -723,7 +729,6 @@ const onAdd = () => {
           paddingBottom: 0,
           backgroundColor: '#fffff',
         },
-        component: 'Test',
       },
     ],
     attributes: { ...rowAttribute.value },
@@ -841,6 +846,15 @@ watch(
   },
   { deep: true },
 )
+const onDragEnd = (data: any) => {
+  const row = rows.value[data.row]
+  row.columns[data.column].component = data.component
+  rows.value = cloneDeep(rows.value)
+}
+const router = getCurrentInstance()?.proxy?.$router
+const onPreview = () => {
+  router?.push({ path: '/page-view/page1' })
+}
 </script>
 <style lang="scss" scoped>
 .page-editor {
@@ -910,7 +924,6 @@ watch(
     &-row {
       min-height: 24px;
       background-color: #fff;
-      min-width: 100px;
     }
   }
 
