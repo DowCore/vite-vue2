@@ -4,6 +4,7 @@
 
 declare module 'vue' {
   export interface GlobalComponents {
+    AttributeItem: typeof import('./components/attribute-item/AttributeItem.vue')['default']
     ButtonPrimary: typeof import('./components/shared/ButtonPrimary.vue')['default']
     ButtonSecondary: typeof import('./components/shared/ButtonSecondary.vue')['default']
     ComponentCard: typeof import('./components/page-editor/ComponentCard.vue')['default']

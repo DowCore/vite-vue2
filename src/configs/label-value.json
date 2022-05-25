@@ -1,0 +1,76 @@
+{
+  "name": "基本设置",
+  "key":"base",
+  "attrs": [
+    {
+      "key": "label",
+      "name": "标题",
+      "type": "string",
+      "value": null,
+      "defaultValue": null
+    },
+    {
+      "key": "value",
+      "name": "内容",
+      "selectableType": ["number","string","date"],
+      "type": "string",
+      "min": 10,
+      "value": null,
+      "defaultValue": null,
+      "prefix": null,
+      "suffix": "",
+      "format": null
+    },
+    {
+      "key": "layout",
+      "name": "布局方式",
+      "type": "select",
+      "value": null,
+      "defaultValue": "ltr",
+      "options": [
+        {
+          "label": "左右布局",
+          "value": "ltr"
+        },
+        {
+          "label": "上下布局",
+          "value": "ttb"
+        }
+      ]
+    }
+  ],
+  "panels": [
+    {
+      "name": "标题",
+      "key": "lableAttribute",
+      "attrs": [
+        {
+          "key": "width",
+          "type": "number",
+          "min": null,
+          "value": null,
+          "defaultValue": null,
+          "prefix": null,
+          "suffix": "px"
+        },
+        {
+          "key": "fontSize",
+          "type": "number",
+          "min": 10,
+          "value": null,
+          "defaultValue": 14,
+          "prefix": null,
+          "suffix": "px"
+        },
+        {
+          "key": "color",
+          "type": "color",
+          "value": null,
+          "defaultValue": "#1c2438",
+          "prefix": null,
+          "suffix": null
+        }
+      ]
+    }
+  ]
+}
