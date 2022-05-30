@@ -1,6 +1,6 @@
 {
   "name": "基本设置",
-  "key":"base",
+  "key": "base",
   "attrs": [
     {
       "key": "label",
@@ -12,11 +12,26 @@
     {
       "key": "value",
       "name": "内容",
-      "selectableType": ["number","string","date"],
-      "type": "string",
-      "min": 10,
+      "config": {
+        "selectableType": [
+          {
+            "label": "数字",
+            "value": "number"
+          },
+          {
+            "label": "字符串",
+            "value": "string"
+          },
+          {
+            "label": "日期",
+            "value": "date"
+          }
+        ]
+      },
+      "type": "value",
       "value": null,
       "defaultValue": null,
+      "valueType": "string",
       "prefix": null,
       "suffix": "",
       "format": null
@@ -24,28 +39,121 @@
     {
       "key": "layout",
       "name": "布局方式",
-      "type": "select",
+      "type": "radio",
       "value": null,
       "defaultValue": "ltr",
-      "options": [
-        {
-          "label": "左右布局",
-          "value": "ltr"
-        },
-        {
-          "label": "上下布局",
-          "value": "ttb"
-        }
-      ]
+      "config": {
+        "options": [
+          {
+            "label": "左右布局",
+            "value": "ltr"
+          },
+          {
+            "label": "上下布局",
+            "value": "ttb"
+          }
+        ]
+      }
     }
   ],
   "panels": [
     {
       "name": "标题",
-      "key": "lableAttribute",
+      "key": "labelAttribute",
       "attrs": [
         {
           "key": "width",
+          "name":"宽",
+          "type": "number",
+          "value": null,
+          "defaultValue":80,
+          "prefix": null,
+          "suffix": "px"
+        },
+        {
+          "key": "fontSize",
+          "type": "number",
+          "config":{
+             "min":10
+          },
+          "name":"字号",
+          "value": null,
+          "defaultValue": 14,
+          "prefix": null,
+          "suffix": "px"
+        },
+        {
+          "key": "color",
+          "type": "color",
+          "name":"颜色",
+          "value": null,
+          "defaultValue": "#1c2438",
+          "prefix": null,
+          "suffix": null
+        },
+        {
+          "key": "height",
+          "name":"高",
+          "type": "number",
+          "value": null,
+          "defaultValue":22,
+          "prefix": null,
+          "suffix": "px"
+        },
+        {
+          "key": "lineHeight",
+          "name":"行高",
+          "type": "number",
+          "value": null,
+          "defaultValue":22,
+          "prefix": null,
+          "suffix": "px"
+        },
+        {
+          "key": "marginLeft",
+          "type": "number",
+          "name":"左间距",
+          "value": null,
+          "defaultValue": 0,
+          "prefix": null,
+          "suffix":"px"
+        },
+        {
+          "key": "marginTop",
+          "type": "number",
+          "name":"上间距",
+          "value": null,
+          "defaultValue": 0,
+          "prefix": null,
+          "suffix":"px"
+        },
+        {
+          "key": "marginRight",
+          "type": "number",
+          "name":"右间距",
+          "value": null,
+          "defaultValue": 0,
+          "prefix": null,
+          "suffix":"px"
+        },
+        {
+          "key": "marginBottom",
+          "type": "number",
+          "name":"下间距",
+          "value": null,
+          "defaultValue": 0,
+          "prefix": null,
+          "suffix":"px"
+        }
+      ]
+    },
+    {
+      "name": "内容",
+      "key": "valueAttribute",
+      "attrs": [
+        {
+          "key": "width",
+          "name":"宽",
           "type": "number",
           "min": null,
           "value": null,
@@ -56,6 +164,7 @@
         {
           "key": "fontSize",
           "type": "number",
+          "name":"字号",
           "min": 10,
           "value": null,
           "defaultValue": 14,
@@ -65,10 +174,65 @@
         {
           "key": "color",
           "type": "color",
+          "name":"颜色",
           "value": null,
           "defaultValue": "#1c2438",
           "prefix": null,
           "suffix": null
+        },
+        {
+          "key": "height",
+          "name":"高",
+          "type": "number",
+          "value": null,
+          "defaultValue":22,
+          "prefix": null,
+          "suffix": "px"
+        },
+        {
+          "key": "lineHeight",
+          "name":"行高",
+          "type": "number",
+          "value": null,
+          "defaultValue":22,
+          "prefix": null,
+          "suffix": "px"
+        },
+        {
+          "key": "marginLeft",
+          "type": "number",
+          "name":"左间距",
+          "value": null,
+          "defaultValue": 0,
+          "prefix": null,
+          "suffix":"px"
+        },
+        {
+          "key": "marginTop",
+          "type": "number",
+          "name":"上间距",
+          "value": null,
+          "defaultValue": 0,
+          "prefix": null,
+          "suffix":"px"
+        },
+        {
+          "key": "marginRight",
+          "type": "number",
+          "name":"右间距",
+          "value": null,
+          "defaultValue": 0,
+          "prefix": null,
+          "suffix":"px"
+        },
+        {
+          "key": "marginBottom",
+          "type": "number",
+          "name":"下间距",
+          "value": null,
+          "defaultValue": 0,
+          "prefix": null,
+          "suffix":"px"
         }
       ]
     }
