@@ -19,6 +19,7 @@ declare module 'vue' {
     IconCarbonBookmarkAdd: typeof import('~icons/carbon/bookmark-add')['default']
     IconCarbonSave: typeof import('~icons/carbon/save')['default']
     LabelValue: typeof import('./components/label-value/LabelValue.vue')['default']
+    List: typeof import('./components/list/List.vue')['default']
     Navbar: typeof import('./components/Navbar.vue')['default']
     PagePanel: typeof import('./components/page-editor/PagePanel.vue')['default']
     Test: typeof import('./components/Test.vue')['default']

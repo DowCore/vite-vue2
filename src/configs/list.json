@@ -1,0 +1,145 @@
+{
+  "name": "列表",
+  "key": "base",
+  "path": "list/List.vue",
+  "type": "list",
+  "attrs": [
+    {
+      "key": "columns",
+      "name": "列数",
+      "type": "number",
+      "value": null,
+      "defaultValue": 2
+    },
+    {
+      "key": "height",
+      "name": "行高",
+      "type": "number",
+      "value": null,
+      "defaultValue": 25
+    },
+    {
+      "key": "rows",
+      "name": "显示行数",
+      "type": "number",
+      "value": null,
+      "defaultValue": 10
+    }
+  ],
+  "columnTemplate": {
+    "name": "列设计",
+    "key": "columnStyle",
+    "attrs": [
+      {
+        "key": "value",
+        "name": "内容",
+        "type": "value",
+        "value": null,
+        "defaultValue": "内容",
+        "target": "prop",
+        "valueType": "string",
+        "config": {
+          "selectableType": [
+            {
+              "label": "数字",
+              "value": "number"
+            },
+            {
+              "label": "字符串",
+              "value": "string"
+            },
+            {
+              "label": "日期",
+              "value": "date"
+            }
+          ]
+        }
+      },
+      {
+        "key": "width",
+        "name": "宽",
+        "type": "number",
+        "value": null,
+        "defaultValue": 80,
+        "prefix": null,
+        "suffix": "px",
+        "target": "style"
+      },
+      {
+        "key": "fontSize",
+        "type": "number",
+        "config": {
+          "min": 10
+        },
+        "name": "字号",
+        "value": null,
+        "defaultValue": 14,
+        "prefix": null,
+        "suffix": "px"
+      },
+      {
+        "key": "color",
+        "type": "color",
+        "name": "颜色",
+        "value": null,
+        "defaultValue": "#1c2438",
+        "prefix": null,
+        "suffix": null
+      },
+      {
+        "key": "height",
+        "name": "高",
+        "type": "number",
+        "value": null,
+        "defaultValue": 22,
+        "prefix": null,
+        "suffix": "px"
+      },
+      {
+        "key": "lineHeight",
+        "name": "行高",
+        "type": "number",
+        "value": null,
+        "defaultValue": 22,
+        "prefix": null,
+        "suffix": "px"
+      },
+      {
+        "key": "marginLeft",
+        "type": "number",
+        "name": "左间距",
+        "value": null,
+        "defaultValue": 0,
+        "prefix": null,
+        "suffix": "px"
+      },
+      {
+        "key": "marginTop",
+        "type": "number",
+        "name": "上间距",
+        "value": null,
+        "defaultValue": 0,
+        "prefix": null,
+        "suffix": "px"
+      },
+      {
+        "key": "marginRight",
+        "type": "number",
+        "name": "右间距",
+        "value": null,
+        "defaultValue": 0,
+        "prefix": null,
+        "suffix": "px"
+      },
+      {
+        "key": "marginBottom",
+        "type": "number",
+        "name": "下间距",
+        "value": null,
+        "defaultValue": 0,
+        "prefix": null,
+        "suffix": "px"
+      }
+    ]
+  }
+}

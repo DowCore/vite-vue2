@@ -1,13 +1,14 @@
 {
-  "name": "基本设置",
+  "name": "标题与内容",
   "key": "base",
+  "path":"label-value/LabelValue.vue",
   "attrs": [
     {
       "key": "label",
       "name": "标题",
       "type": "string",
       "value": null,
-      "defaultValue": null
+      "defaultValue": "标题"
     },
     {
       "key": "value",
@@ -30,7 +31,7 @@
       },
       "type": "value",
       "value": null,
-      "defaultValue": null,
+      "defaultValue": "内容",
       "valueType": "string",
       "prefix": null,
       "suffix": "",
@@ -56,10 +57,10 @@
       }
     }
   ],
-  "panels": [
+  "styles": [
     {
       "name": "标题",
-      "key": "labelAttribute",
+      "key": "labelStyle",
       "attrs": [
         {
           "key": "width",
@@ -149,7 +150,7 @@
     },
     {
       "name": "内容",
-      "key": "valueAttribute",
+      "key": "valueStyle",
       "attrs": [
         {
           "key": "width",

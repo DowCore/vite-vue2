@@ -3687,6 +3687,11 @@ vcolorpicker@^1.1.0:
     highlight.js "^9.12.0"
     vue "^2.5.17"
 
+vee-validate@3.4.14:
+  version "3.4.14"
+  resolved "https://registry.npmmirror.com/vee-validate/-/vee-validate-3.4.14.tgz#51f91c01d6660c43c6252c417c89fb07cdf8b8dd"
+  integrity sha512-Hqqic8G9WcRSIzCxiCPqMZv4qB8JE1lIQqIOLDm2K5BXUiL8d4a2+kqkanv8gQSGDzYpnCQZ7BO/T99Aj05T1Q==
+
 vite-plugin-vue2@^1.9.3:
   version "1.9.3"
   resolved "https://registry.yarnpkg.com/vite-plugin-vue2/-/vite-plugin-vue2-1.9.3.tgz#a73363e70d7fe6e420a52890ca650d3d270245f5"
@@ -3758,7 +3763,7 @@ vue-right-click-menu@^1.1.1:
   resolved "https://registry.npmmirror.com/vue-right-click-menu/-/vue-right-click-menu-1.1.1.tgz#04c9a51e479c474748d6c4f0e0c23630ab1f6803"
   integrity sha512-zvZea1Gc7548+8BlEQfz8gyIEJdLClt3KeEJkqkzfvjQ7kG9/FsaOYeXg4+28lnHeC7drVmyFuYyC4clenbcCw==
 
-vue-router@3.5.4:
+vue-router@^3.5.4:
   version "3.5.4"
   resolved "https://registry.npmmirror.com/vue-router/-/vue-router-3.5.4.tgz#c453c0b36bc75554de066fefc3f2a9c3212aca70"
   integrity sha512-x+/DLAJZv2mcQ7glH2oV9ze8uPwcI+H+GgTgTmb5I55bCgY3+vXWIsqbYUzbBSZnwFHEJku4eoaH/x98veyymQ==
