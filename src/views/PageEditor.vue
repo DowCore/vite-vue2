@@ -534,6 +534,7 @@
 import { assign, cloneDeep, debounce, uniqueId } from 'lodash'
 import draggable from 'vuedraggable'
 import { useEventListener } from '@vueuse/core'
+import { useCookies } from '@vueuse/integrations/useCookies'
 import { Message } from 'element-ui'
 import useRuler from '@/utils/uses/useRuler'
 import type {
@@ -553,6 +554,8 @@ const style = ref<any>({
   'minHeight': '1080px',
   'display': 'flex',
 })
+const cookie = useCookies(['locale'])
+console.log(cookie.get('locale'), 'cookie信息')
 const rowAttribute = ref<RowAttribute>({
   height: 128,
   paddingTop: 0,
