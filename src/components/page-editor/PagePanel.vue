@@ -1,3 +1,119 @@
+<script lang="ts" setup>
+import draggable from 'vuedraggable'
+import { uniqueId } from 'lodash'
+import type { Row } from '@/types/PageEdit'
+interface Spacing {
+  top: number
+  bottom: number
+  left: number
+  right: number
+}
+const _emit = defineEmits([
+  'background-change',
+  'spacing-change',
+  'row-gap-change',
+])
+const activeName = ref<string>('page')
+const layout = ref<string>('flex')
+const rowGap = ref<string>('md')
+const padding = ref<Spacing>({ top: 24, left: 24, right: 24, bottom: 24 })
+const color = ref<string>('#f5f7f9')
+const layouts = ref<Array<any>>([
+  {
+    key: 'layout-column-1',
+    columns: 1,
+  },
+  {
+    key: 'layout-column-2',
+    columns: 2,
+  },
+  {
+    key: 'layout-column-3',
+    columns: 3,
+  },
+  {
+    key: 'layout-column-4',
+    columns: 4,
+  },
+  {
+    key: 'layout-column-5',
+    columns: 5,
+  },
+  {
+    key: 'layout-column-6',
+    columns: 6,
+  },
+  {
+    key: 'layout-column-7',
+    columns: 7,
+  },
+  {
+    key: 'layout-column-8',
+    columns: 8,
+  },
+  {
+    key: 'layout-column-9',
+    columns: 9,
+  },
+])
+watch(
+  () => color.value,
+  () => {
+    _emit('background-change', color.value)
+  },
+)
+watch(
+  () => padding.value,
+  () => {
+    _emit('spacing-change', padding.value)
+  },
+  { deep: true },
+)
+watch([() => rowGap.value], () => {
+  _emit('row-gap-change', rowGap.value)
+})
+const customClone = (row: any) => {
+  const cols = []
+  for (let i = 0; i < row.columns; i++) {
+    cols.push({
+      key: uniqueId('page_edit-column'),
+      attributes: {
+        distribution: 'equal',
+        marginTop: 0,
+        marginLeft: 0,
+        marginRight: 0,
+        marginBottom: 0,
+        paddingTop: 0,
+        paddingLeft: 0,
+        paddingRight: 0,
+        paddingBottom: 0,
+        backgroundColor: '#ffffff',
+      },
+    })
+  }
+  const result: Row = {
+    key: uniqueId('page_edit-row'),
+    columns: cols,
+    fixed: row.column,
+    attributes: {
+      height: 128,
+      paddingTop: 0,
+      paddingLeft: 0,
+      paddingRight: 0,
+      paddingBottom: 0,
+      display: 'grid',
+      marginTop: 0,
+      marginLeft: 0,
+      marginRight: 0,
+      marginBottom: 0,
+      space: 'md',
+      backgroundColor: '#ffffff',
+    },
+  }
+  return result
+}
+</script>
+
 <template>
   <div class="panel">
     <el-collapse v-model="activeName" accordion>
@@ -134,121 +250,7 @@
     </el-collapse>
   </div>
 </template>
-<script lang="ts" setup>
-import draggable from 'vuedraggable'
-import { uniqueId } from 'lodash'
-import type { Row } from '@/types/PageEdit'
-interface Spacing {
-  top: number
-  bottom: number
-  left: number
-  right: number
-}
-const activeName = ref<string>('page')
-const layout = ref<string>('flex')
-const rowGap = ref<string>('md')
-const padding = ref<Spacing>({ top: 24, left: 24, right: 24, bottom: 24 })
-const color = ref<string>('#f5f7f9')
-const layouts = ref<Array<any>>([
-  {
-    key: 'layout-column-1',
-    columns: 1,
-  },
-  {
-    key: 'layout-column-2',
-    columns: 2,
-  },
-  {
-    key: 'layout-column-3',
-    columns: 3,
-  },
-  {
-    key: 'layout-column-4',
-    columns: 4,
-  },
-  {
-    key: 'layout-column-5',
-    columns: 5,
-  },
-  {
-    key: 'layout-column-6',
-    columns: 6,
-  },
-  {
-    key: 'layout-column-7',
-    columns: 7,
-  },
-  {
-    key: 'layout-column-8',
-    columns: 8,
-  },
-  {
-    key: 'layout-column-9',
-    columns: 9,
-  },
-])
-const _emit = defineEmits([
-  'background-change',
-  'spacing-change',
-  'row-gap-change',
-])
-watch(
-  () => color.value,
-  () => {
-    _emit('background-change', color.value)
-  },
-)
-watch(
-  () => padding.value,
-  () => {
-    _emit('spacing-change', padding.value)
-  },
-  { deep: true },
-)
-watch([() => rowGap.value], () => {
-  _emit('row-gap-change', rowGap.value)
-})
-const customClone = (row: any) => {
-  const cols = []
-  for (let i = 0; i < row.columns; i++) {
-    cols.push({
-      key: uniqueId('page_edit-column'),
-      attributes: {
-        distribution: 'equal',
-        marginTop: 0,
-        marginLeft: 0,
-        marginRight: 0,
-        marginBottom: 0,
-        paddingTop: 0,
-        paddingLeft: 0,
-        paddingRight: 0,
-        paddingBottom: 0,
-        backgroundColor: '#ffffff',
-      },
-    })
-  }
-  const result: Row = {
-    key: uniqueId('page_edit-row'),
-    columns: cols,
-    fixed: row.column,
-    attributes: {
-      height: 128,
-      paddingTop: 0,
-      paddingLeft: 0,
-      paddingRight: 0,
-      paddingBottom: 0,
-      display: 'grid',
-      marginTop: 0,
-      marginLeft: 0,
-      marginRight: 0,
-      marginBottom: 0,
-      space: 'md',
-      backgroundColor: '#ffffff',
-    },
-  }
-  return result
-}
-</script>
+
 <style lang="scss" scoped>
 .panel {
   overflow-y: auto;

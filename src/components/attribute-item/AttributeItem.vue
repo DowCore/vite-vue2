@@ -1,3 +1,29 @@
+<script lang="ts" setup>
+defineProps({
+  type: { type: String, required: true },
+  defaultValue: { type: [String, Number] },
+  config: { type: Object },
+  valueType: { type: String },
+})
+const _emit = defineEmits(['on-change', 'on-attribute-change'])
+const current = getCurrentInstance()?.props
+const model = ref<string | number>(current?.defaultValue as string | number)
+const selectedType = ref<string>(current?.valueType as string)
+const format = ref<string | undefined>()
+watch(
+  () => model.value,
+  () => {
+    _emit('on-change', model.value)
+  },
+)
+watch([() => selectedType.value, () => format.value], () => {
+  _emit('on-attribute-change', {
+    valueType: selectedType.value,
+    format: format.value,
+  })
+})
+</script>
+
 <template>
   <div class="attribute-item">
     <el-input v-if="type === 'string'" v-model="model" />
@@ -54,31 +80,7 @@
     </div>
   </div>
 </template>
-<script lang="ts" setup>
-defineProps({
-  type: { type: String, required: true },
-  defaultValue: { type: [String, Number] },
-  config: { type: Object },
-  valueType: { type: String },
-})
-const _emit = defineEmits(['on-change', 'on-attribute-change'])
-const current = getCurrentInstance()?.props
-const model = ref<string | number>(current?.defaultValue as string | number)
-const selectedType = ref<string>(current?.valueType as string)
-const format = ref<string | undefined>()
-watch(
-  () => model.value,
-  () => {
-    _emit('on-change', model.value)
-  },
-)
-watch([() => selectedType.value, () => format.value], () => {
-  _emit('on-attribute-change', {
-    valueType: selectedType.value,
-    format: format.value,
-  })
-})
-</script>
+
 <style lang="scss" scoped>
 .attr-item-label {
   width: 80px;

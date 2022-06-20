@@ -1,3 +1,13 @@
+<script lang="ts" setup>
+defineProps({
+  label: { type: String },
+  value: { type: [String, Number], required: true },
+  layout: { type: String, required: true },
+  labelStyle: { type: Object },
+  valueStyle: { type: Object },
+})
+</script>
+
 <template>
   <div class="lable-value" :class="layout === 'ltr' ? 'flex' : ''">
     <div class="lable-value__label" :style="labelStyle">
@@ -8,12 +18,3 @@
     </div>
   </div>
 </template>
-<script lang="ts" setup>
-defineProps({
-  label: { type: String },
-  value: { type: [String, Number], required: true },
-  layout: { type: String, required: true },
-  labelStyle: { type: Object },
-  valueStyle: { type: Object },
-})
-</script>

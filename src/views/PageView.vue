@@ -1,24 +1,3 @@
-<template>
-  <div class="page-area flex flex-col" :style="style">
-    <div
-      v-for="element in rows"
-      :key="element.key"
-      class="page-area-row relative divide-x divide-dotted divide-blue-400 flex layouts-item"
-      :style="toRowStyle(element)"
-      :class="toRowClass(element)"
-    >
-      <div
-        v-for="column in element.columns"
-        :key="column.key"
-        class="page-area-column"
-        :style="toColumnStyle(element, column)"
-      >
-        <component :is="column.component.component" v-if="column.component" />
-      </div>
-    </div>
-  </div>
-</template>
-
 <script lang="ts" setup>
 import type {
   Row,
@@ -56,7 +35,7 @@ const rows = ref<Array<Row>>([
         component: {
           name: 'Test',
           path: 'Test.vue',
-          component: defineAsyncComponent(() => import(`../components/Test.vue`)),
+          component: defineAsyncComponent(() => import('../components/Test.vue')),
         },
       },
     ],
@@ -77,6 +56,27 @@ const rows = ref<Array<Row>>([
   },
 ])
 </script>
+
+<template>
+  <div class="page-area flex flex-col" :style="style">
+    <div
+      v-for="element in rows"
+      :key="element.key"
+      class="page-area-row relative divide-x divide-dotted divide-blue-400 flex layouts-item"
+      :style="toRowStyle(element)"
+      :class="toRowClass(element)"
+    >
+      <div
+        v-for="column in element.columns"
+        :key="column.key"
+        class="page-area-column"
+        :style="toColumnStyle(element, column)"
+      >
+        <component :is="column.component.component" v-if="column.component" />
+      </div>
+    </div>
+  </div>
+</template>
 
 <style lang="scss" scoped>
 .page-area {

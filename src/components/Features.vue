@@ -1,3 +1,9 @@
+<script>
+export default {
+  name: 'Features',
+}
+</script>
+
 <template>
   <section class="container px-5 py-12 mx-auto text-gray-600 body-font">
     <div class="flex flex-col w-full mb-8 text-center">
@@ -59,8 +65,3 @@
     </div>
   </section>
 </template>
-<script>
-export default {
-  name: 'Features',
-}
-</script>

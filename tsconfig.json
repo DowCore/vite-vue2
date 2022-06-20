@@ -37,6 +37,7 @@
     "node_modules"
   ],
   "vueCompilerOptions": {
-    "experimentalCompatMode": 2
+    "experimentalCompatMode": 2,
+    "types": ["unplugin-vue-define-options"]
   }
 }

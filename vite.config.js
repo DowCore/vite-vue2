@@ -8,7 +8,6 @@ import IconsResolver from 'unplugin-icons/resolver'
 import ScriptSetup from 'unplugin-vue2-script-setup/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import { FileSystemIconLoader } from 'unplugin-icons/loaders'
-import DefineOptions from 'unplugin-vue-define-options/vite'
 const config = ({ mode }) =>
   defineConfig({
     resolve: {
@@ -45,7 +44,6 @@ const config = ({ mode }) =>
         imports: ['@vue/composition-api', 'vue-router', '@vueuse/core'],
         dts: 'src/auto-imports.d.ts',
       }),
-      DefineOptions(),
     ],
 
     css: {

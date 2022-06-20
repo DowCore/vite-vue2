@@ -1,3 +1,135 @@
+<script lang="ts" setup>
+import { ValidationObserver, ValidationProvider, extend } from 'vee-validate'
+import { cloneDeep } from 'lodash'
+import { buildAttributes } from '@/utils/attributeBuild'
+import type { Api } from '@/types/Api'
+const modules = import.meta.glob('../configs/*.json')
+const maps = new Map()
+const current = ref<any>(null)
+const customComponent = ref<any>(null)
+const activeNames = ref<Array<string>>(['base'])
+const options = ref<any>(null)
+const dialogVisible = ref<Boolean>(false)
+const myform = ref<HTMLElement>()
+const components = ref<any>()
+const currentComponent = ref<string>('')
+onMounted(async () => {
+  for (const path in modules) {
+    const mod: any = await modules[path]()
+    const key = path.replace(/(.*\/){0,}([^.]+).*/gi, '$2')
+    const model = {
+      name: mod.name,
+      attrs: mod.attrs,
+      styles: mod.styles,
+      key: mod.key,
+      path: mod.path,
+      type: mod.type,
+      columnTemplate: mod.columnTemplate,
+    }
+    maps.set(key, model)
+  }
+  components.value = []
+  for (const [key] of maps) {
+    components.value.push({
+      value: key,
+      label: maps.get(key).name,
+    })
+  }
+  currentComponent.value = components.value[0].value
+})
+const onChange = (val: any, item: any) => {
+  item.value = val
+  const list = options.value.list
+  options.value = { ...buildAttributes(current.value), list }
+}
+const onAttributeChange = (val: any, item: any) => {
+  item.valueType = val.valueType
+  item.format = val.format
+  options.value = buildAttributes(current.value)
+}
+const onAdd = () => {
+  dialogVisible.value = true
+}
+const api = ref<Api>({
+  name: '',
+  params: [],
+  alias: '',
+})
+const onOpen = () => {
+  api.value = {
+    name: '',
+    params: [],
+    alias: '',
+  }
+}
+const onAddParam = () => {
+  api.value.params.push({
+    name: '',
+    value: '',
+  })
+}
+const deleteParam = (item: any) => {
+  const index = api.value.params.indexOf(item)
+  api.value.params.splice(index, 1)
+}
+const apis = ref<any>([
+  {
+    alias: 'api1',
+    name: 'UNVS00002',
+    params: [],
+    fields: [
+      {
+        code: 'code',
+        label: '编码',
+        alias: '$api1.code',
+      },
+    ],
+  },
+])
+extend('required', {
+  validate(value: any) {
+    return {
+      required: true,
+      valid: !['', null, undefined].includes(value),
+    }
+  },
+  computesRequired: true,
+})
+const handleSubmit = () => {
+  (myform.value as any).validate().then((success: Boolean) => {
+    alert(success)
+    if (!success) {
+      //
+      return true
+    }
+    else {
+      //
+      return false
+    }
+  })
+}
+const onSave = () => {
+  console.log(apis.value, '结果')
+}
+watch(
+  () => currentComponent.value,
+  () => {
+    current.value = maps.get(currentComponent.value)
+    customComponent.value = defineAsyncComponent(
+      () => import(`../components/${current.value.path}`),
+    )
+    const _options = { ...buildAttributes(current.value) }
+    if (['list', 'table'].includes(current.value.type)) {
+      _options.list = []
+      for (let i = 0; i < _options.columns; i++) {
+        _options.list.push(cloneDeep(current.value.columnTemplate))
+      }
+    }
+    options.value = _options
+  },
+)
+</script>
+
 <template>
   <div class="component-editor">
     <div class="flex">
@@ -75,12 +207,12 @@
             fontSize: '12px',
             color: '#464c5b',
             height: '36px',
-            lineHeight: '36px'
+            lineHeight: '36px',
           }"
           :value-style="{
             fontSize: '14px',
             height: '36px',
-            lineHeight: '36px'
+            lineHeight: '36px',
           }"
           value="$date"
         />
@@ -92,12 +224,12 @@
             fontSize: '12px',
             color: '#464c5b',
             height: '36px',
-            lineHeight: '36px'
+            lineHeight: '36px',
           }"
           :value-style="{
             fontSize: '14px',
             height: '36px',
-            lineHeight: '36px'
+            lineHeight: '36px',
           }"
           value="$user"
         />
@@ -226,7 +358,7 @@
                 <el-collapse-item
                   v-for="(item, index) in options.list"
                   :key="index"
-                  :title="'第' + (index + 1) + '列'"
+                  :title="`第${index + 1}列`"
                   :name="index"
                 >
                   <div class="attribute-panel">
@@ -430,138 +562,6 @@
     </el-dialog>
   </div>
 </template>
-
-<script lang="ts" setup>
-import { ValidationObserver, ValidationProvider, extend } from 'vee-validate'
-import { cloneDeep } from 'lodash'
-import { buildAttributes } from '@/utils/attributeBuild'
-import type { Api } from '@/types/Api'
-const modules = import.meta.glob('../configs/*.json')
-const maps = new Map()
-const current = ref<any>(null)
-const customComponent = ref<any>(null)
-const activeNames = ref<Array<string>>(['base'])
-const options = ref<any>(null)
-const dialogVisible = ref<Boolean>(false)
-const myform = ref<HTMLElement>()
-const components = ref<any>()
-const currentComponent = ref<string>('')
-onMounted(async() => {
-  for (const path in modules) {
-    const mod: any = await modules[path]()
-    const key = path.replace(/(.*\/){0,}([^.]+).*/gi, '$2')
-    const model = {
-      name: mod.name,
-      attrs: mod.attrs,
-      styles: mod.styles,
-      key: mod.key,
-      path: mod.path,
-      type: mod.type,
-      columnTemplate: mod.columnTemplate,
-    }
-    maps.set(key, model)
-  }
-  components.value = []
-  for (const [key] of maps) {
-    components.value.push({
-      value: key,
-      label: maps.get(key).name,
-    })
-  }
-  currentComponent.value = components.value[0].value
-})
-const onChange = (val: any, item: any) => {
-  item.value = val
-  const list = options.value.list
-  options.value = { ...buildAttributes(current.value), list }
-}
-const onAttributeChange = (val: any, item: any) => {
-  item.valueType = val.valueType
-  item.format = val.format
-  options.value = buildAttributes(current.value)
-}
-const onAdd = () => {
-  dialogVisible.value = true
-}
-const api = ref<Api>({
-  name: '',
-  params: [],
-  alias: '',
-})
-const onOpen = () => {
-  api.value = {
-    name: '',
-    params: [],
-    alias: '',
-  }
-}
-const onAddParam = () => {
-  api.value.params.push({
-    name: '',
-    value: '',
-  })
-}
-const deleteParam = (item: any) => {
-  const index = api.value.params.indexOf(item)
-  api.value.params.splice(index, 1)
-}
-const apis = ref<any>([
-  {
-    alias: 'api1',
-    name: 'UNVS00002',
-    params: [],
-    fields: [
-      {
-        code: 'code',
-        label: '编码',
-        alias: '$api1.code',
-      },
-    ],
-  },
-])
-extend('required', {
-  validate(value: any) {
-    return {
-      required: true,
-      valid: !['', null, undefined].includes(value),
-    }
-  },
-  computesRequired: true,
-})
-const handleSubmit = () => {
-  (myform.value as any).validate().then((success: Boolean) => {
-    alert(success)
-    if (!success) {
-      //
-      return true
-    }
-    else {
-      //
-      return false
-    }
-  })
-}
-const onSave = () => {
-  console.log(apis.value, '结果')
-}
-watch(
-  () => currentComponent.value,
-  () => {
-    current.value = maps.get(currentComponent.value)
-    customComponent.value = defineAsyncComponent(
-      () => import(`../components/${current.value.path}`),
-    )
-    const _options = { ...buildAttributes(current.value) }
-    if (['list', 'table'].includes(current.value.type)) {
-      _options.list = []
-      for (let i = 0; i < _options.columns; i++) {
-        _options.list.push(cloneDeep(current.value.columnTemplate))
-      }
-    }
-    options.value = _options
-  },
-)
-</script>
 
 <style lang="scss" scoped>
 .component-editor {

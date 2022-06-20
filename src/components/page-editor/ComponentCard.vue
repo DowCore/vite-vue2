@@ -1,3 +1,18 @@
+<script lang="ts" setup>
+defineProps({
+  title: { type: String, required: true },
+  name: { type: String, required: true },
+  path: { type: String, required: true },
+  image: { type: String, required: true },
+})
+const dialogVisible = ref<Boolean>(false)
+const props: any = getCurrentInstance()?.props
+const componentCard = ref<any>(defineAsyncComponent(() => import(`../${props.path}`)))
+const onPreview = () => {
+  dialogVisible.value = true
+}
+</script>
+
 <template>
   <div class="component-card">
     <div class="flex" style="padding: 4px 16px">
@@ -16,7 +31,7 @@
       <img :src="image" style="width: 100%; height: 100%">
     </div>
     <el-dialog
-      :title="'预览'+name"
+      :title="`预览${name}`"
       :visible.sync="dialogVisible"
       :fullscreen="true"
     >
@@ -32,21 +47,6 @@
     </el-dialog>
   </div>
 </template>
-
-<script lang="ts" setup>
-defineProps({
-  title: { type: String, required: true },
-  name: { type: String, required: true },
-  path: { type: String, required: true },
-  image: { type: String, required: true },
-})
-const dialogVisible = ref<Boolean>(false)
-const props: any = getCurrentInstance()?.props
-const componentCard = ref<any>(defineAsyncComponent(() => import(`../${props.path}`)))
-const onPreview = () => {
-  dialogVisible.value = true
-}
-</script>
 
 <style lang="scss" scoped>
 .component-card {

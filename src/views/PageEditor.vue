@@ -1,3 +1,333 @@
+<script lang="ts" setup>
+import { assign, cloneDeep, debounce, uniqueId } from 'lodash'
+import draggable from 'vuedraggable'
+import { useEventListener } from '@vueuse/core'
+import { useCookies } from '@vueuse/integrations/useCookies'
+import { Message } from 'element-ui'
+import useRuler from '@/utils/uses/useRuler'
+import type {
+  Column,
+  ColumnAttribute,
+  Row,
+  RowAttribute,
+} from '@/types/PageEdit'
+import { toColumnStyle, toRowClass, toRowStyle } from '@/utils/PageEdit'
+const style = ref<any>({
+  'background-color': '#f5f7f9',
+  'padding-top': '24px',
+  'padding-left': '24px',
+  'padding-right': '24px',
+  'padding-bottom': '24px',
+  'minWidth': '1920px',
+  'minHeight': '1080px',
+  'display': 'flex',
+})
+const cookie = useCookies(['locale'])
+console.log(cookie.get('locale'), 'cookie信息')
+const rowAttribute = ref<RowAttribute>({
+  height: 128,
+  paddingTop: 0,
+  paddingLeft: 0,
+  paddingRight: 0,
+  paddingBottom: 0,
+  display: 'grid',
+  marginTop: 0,
+  marginLeft: 0,
+  marginRight: 0,
+  marginBottom: 0,
+  space: 'md',
+  backgroundColor: '#ffffff',
+})
+const rows = ref<Array<Row>>([
+  {
+    key: uniqueId('page_editor-row'),
+    fixed: 1,
+    columns: [
+      {
+        key: uniqueId('page_edit-column'),
+        attributes: {
+          distribution: 'equal',
+          marginTop: 0,
+          marginLeft: 0,
+          marginRight: 0,
+          marginBottom: 0,
+          paddingTop: 0,
+          paddingLeft: 0,
+          paddingRight: 0,
+          paddingBottom: 0,
+          backgroundColor: '#fffff',
+        },
+      },
+    ],
+    attributes: { ...rowAttribute.value },
+  },
+])
+const columnAttribute = ref<ColumnAttribute>({
+  distribution: 'equal',
+  marginTop: 0,
+  marginLeft: 0,
+  marginRight: 0,
+  marginBottom: 0,
+  paddingTop: 0,
+  paddingLeft: 0,
+  paddingRight: 0,
+  paddingBottom: 0,
+  backgroundColor: '#ffffff',
+})
+const designWidth = ref<number>(1920)
+const designHeight = ref<number>(1080)
+const drawer = ref<Boolean>(false)
+const editor = ref<HTMLElement>()
+let current: any = ''
+const activeSiderbar = ref('layout')
+const menuOptions = ref<any>({
+  text: ['编辑列', '新增列', '删除列', '设置组件', '删除行'],
+  handler: {
+    editColumn(data: any) {
+      current = data
+      drawer.value = true
+      const row = rows.value.find((t) => {
+        return t.key === current.row
+      }) as Row
+      rows.value.forEach((t) => {
+        t.isSelected = false
+        t.columns.forEach((c) => {
+          c.isSelected = false
+        })
+      })
+      rowAttribute.value = { ...row.attributes }
+      row.isSelected = true
+      const col = row.columns.find((t) => {
+        return t.key === current.column
+      }) as Column
+      columnAttribute.value = { ...col.attributes }
+      col.isSelected = true
+    },
+    addColumn(data: any) {
+      current = data
+      const row = rows.value.find((t) => {
+        return t.key === current.row
+      }) as Row
+      rows.value.forEach((t) => {
+        t.isSelected = false
+        t.columns.forEach((c) => {
+          c.isSelected = false
+        })
+      })
+      rowAttribute.value = { ...row.attributes }
+      row.isSelected = true
+      const col: Column = {
+        key: uniqueId('page_edit-column'),
+        attributes: {
+          distribution: 'equal',
+          marginTop: 0,
+          marginLeft: 0,
+          marginRight: 0,
+          marginBottom: 0,
+          paddingTop: 0,
+          paddingLeft: 0,
+          paddingRight: 0,
+          paddingBottom: 0,
+          backgroundColor: '#ffffff',
+        },
+      }
+      columnAttribute.value = { ...col.attributes }
+      col.isSelected = true
+      current.column = col.key
+      row.columns.push(col)
+      drawer.value = true
+    },
+    deleteColumn(data: any) {
+      const row = rows.value.find((t) => {
+        return t.key === data.row
+      }) as Row
+      if (row.columns.length > 1) {
+        const index = row.columns.findIndex((t) => {
+          return t.key === current.column
+        })
+        row.columns.splice(index, 1)
+      }
+      else {
+        Message.error('不能删除唯一的单元格')
+      }
+    },
+    setComponent() {
+      activeSiderbar.value = 'component'
+    },
+    deleteRow(data: any) {
+      const index = rows.value.findIndex((t) => {
+        return t.key === data.row
+      })
+      rows.value.splice(index, 1)
+    },
+  },
+})
+const maps = new Map([
+  ['md', '16px'],
+  ['lg', '24px'],
+  ['sm', '8px'],
+])
+useEventBus('page-design-change').on((data: any) => {
+  style.value.minWidth = `${data.width}px`
+  style.value.minHeight = `${data.height}px`
+})
+const sidbarChange = (type: string) => {
+  activeSiderbar.value = type
+}
+const activePanel = ref<string>('attribute')
+const panelChange = (panel: string) => {
+  // i
+}
+const activeName = ref<string>('row')
+const onAdd = () => {
+  /* const myBus = useEventBus('reset-ruler')
+  myBus.emit()*/
+  rows.value.push({
+    key: uniqueId('page_editor-row'),
+    fixed: 1,
+    columns: [
+      {
+        key: uniqueId('page_edit-column'),
+        attributes: {
+          distribution: 'equal',
+          marginTop: 0,
+          marginLeft: 0,
+          marginRight: 0,
+          marginBottom: 0,
+          paddingTop: 0,
+          paddingLeft: 0,
+          paddingRight: 0,
+          paddingBottom: 0,
+          backgroundColor: '#fffff',
+        },
+      },
+    ],
+    attributes: { ...rowAttribute.value },
+  })
+}
+
+const pageBackgroundChange = (color: string) => {
+  style.value['background-color'] = color
+}
+const pageSpacingChange = (padding: any) => {
+  const obj = Object.keys(padding).reduce((pre: any, cur: string) => {
+    pre[`padding-${cur}`] = `${padding[cur]}px`
+    return pre
+  }, {})
+  style.value = assign(style.value, obj)
+}
+const rulerStyle = ref<object>({})
+onMounted(() => {
+  const box: HTMLElement = document.querySelector(
+    '.ruler__content',
+  ) as HTMLElement
+  const zoomX = box.clientWidth / designWidth.value
+  rulerStyle.value = {
+    'transform-origin': '0 0',
+    'transform': `scale(${zoomX},1)`,
+  }
+  useEventListener(editor, 'mouseup', () => {
+    rows.value.forEach((t) => {
+      t.isSelected = false
+      t.columns.forEach((c) => {
+        c.isSelected = false
+      })
+    })
+    rows.value = cloneDeep(rows.value)
+  })
+  let ruler: any = null
+  nextTick(() => {
+    ruler = useRuler(
+      document.querySelector('.ruler__horizontal') as HTMLElement,
+      document.querySelector('.ruler__vertical') as HTMLElement,
+      box,
+      document.querySelector('.page-area') as HTMLElement,
+    )
+  })
+  watch([() => designWidth.value, () => designHeight.value], () => {
+    const zoomX = box.clientWidth / designWidth.value
+    rulerStyle.value = {
+      'transform-origin': '0 0',
+      'transform': `scale(${zoomX},1)`,
+    }
+    debounce(() => {
+      nextTick(() => {
+        ruler.resetDesign(designWidth.value, designHeight.value)
+      })
+    }, 500)()
+  })
+})
+let rowGap = 'md'
+const setRowGap = (gap: string) => {
+  rows.value.forEach((item, index) => {
+    if (index !== 0) {
+      item.attributes.marginTop = parseInt(gap)
+    }
+    else {
+      item.attributes.marginTop = 0
+    }
+  })
+}
+const pageRowGapChange = (gap: any) => {
+  rowGap = gap
+  setRowGap(maps.get(rowGap) as string)
+}
+watch(
+  () => rows.value,
+  () => {
+    setRowGap(maps.get(rowGap) as string)
+  },
+)
+watch(
+  () => columnAttribute.value.distribution,
+  () => {
+    switch (columnAttribute.value.distribution) {
+      case 'fixed':
+        columnAttribute.value.width = 128
+        break
+      case 'scale':
+        columnAttribute.value.width = 1
+        break
+      default:
+        columnAttribute.value.width = undefined
+        break
+    }
+  },
+)
+watch(
+  () => columnAttribute.value,
+  () => {
+    const row = rows.value.find((t) => {
+      return t.key === current.row
+    }) as Row
+    const col = row.columns.find((t) => {
+      return t.key === current.column
+    }) as Column
+    col.attributes = { ...columnAttribute.value }
+  },
+  { deep: true },
+)
+watch(
+  () => rowAttribute.value,
+  () => {
+    const row = rows.value.find((t) => {
+      return t.key === current.row
+    }) as Row
+    row.attributes = { ...rowAttribute.value }
+  },
+  { deep: true },
+)
+const onDragEnd = (data: any) => {
+  const row = rows.value[data.row]
+  row.columns[data.column].component = data.component
+  rows.value = cloneDeep(rows.value)
+}
+const router = getCurrentInstance()?.proxy?.$router
+const onPreview = () => {
+  router?.push({ path: '/page-view/page1' })
+}
+</script>
+
 <template>
   <div class="page-editor">
     <div class="page-editor-tool flex space-x-md">
@@ -530,335 +860,7 @@
     </el-drawer>
   </div>
 </template>
-<script lang="ts" setup>
-import { assign, cloneDeep, debounce, uniqueId } from 'lodash'
-import draggable from 'vuedraggable'
-import { useEventListener } from '@vueuse/core'
-import { useCookies } from '@vueuse/integrations/useCookies'
-import { Message } from 'element-ui'
-import useRuler from '@/utils/uses/useRuler'
-import type {
-  Column,
-  ColumnAttribute,
-  Row,
-  RowAttribute,
-} from '@/types/PageEdit'
-import { toColumnStyle, toRowClass, toRowStyle } from '@/utils/PageEdit'
-const style = ref<any>({
-  'background-color': '#f5f7f9',
-  'padding-top': '24px',
-  'padding-left': '24px',
-  'padding-right': '24px',
-  'padding-bottom': '24px',
-  'minWidth': '1920px',
-  'minHeight': '1080px',
-  'display': 'flex',
-})
-const cookie = useCookies(['locale'])
-console.log(cookie.get('locale'), 'cookie信息')
-const rowAttribute = ref<RowAttribute>({
-  height: 128,
-  paddingTop: 0,
-  paddingLeft: 0,
-  paddingRight: 0,
-  paddingBottom: 0,
-  display: 'grid',
-  marginTop: 0,
-  marginLeft: 0,
-  marginRight: 0,
-  marginBottom: 0,
-  space: 'md',
-  backgroundColor: '#ffffff',
-})
-const rows = ref<Array<Row>>([
-  {
-    key: uniqueId('page_editor-row'),
-    fixed: 1,
-    columns: [
-      {
-        key: uniqueId('page_edit-column'),
-        attributes: {
-          distribution: 'equal',
-          marginTop: 0,
-          marginLeft: 0,
-          marginRight: 0,
-          marginBottom: 0,
-          paddingTop: 0,
-          paddingLeft: 0,
-          paddingRight: 0,
-          paddingBottom: 0,
-          backgroundColor: '#fffff',
-        },
-      },
-    ],
-    attributes: { ...rowAttribute.value },
-  },
-])
-const columnAttribute = ref<ColumnAttribute>({
-  distribution: 'equal',
-  marginTop: 0,
-  marginLeft: 0,
-  marginRight: 0,
-  marginBottom: 0,
-  paddingTop: 0,
-  paddingLeft: 0,
-  paddingRight: 0,
-  paddingBottom: 0,
-  backgroundColor: '#ffffff',
-})
-const designWidth = ref<number>(1920)
-const designHeight = ref<number>(1080)
-const drawer = ref<Boolean>(false)
-const editor = ref<HTMLElement>()
-let current: any = ''
-const activeSiderbar = ref('layout')
-const menuOptions = ref<any>({
-  text: ['编辑列', '新增列', '删除列', '设置组件', '删除行'],
-  handler: {
-    editColumn(data: any) {
-      current = data
-      drawer.value = true
-      const row = rows.value.find((t) => {
-        return t.key === current.row
-      }) as Row
-      rows.value.forEach((t) => {
-        t.isSelected = false
-        t.columns.forEach((c) => {
-          c.isSelected = false
-        })
-      })
-      rowAttribute.value = { ...row.attributes }
-      row.isSelected = true
-      const col = row.columns.find((t) => {
-        return t.key === current.column
-      }) as Column
-      columnAttribute.value = { ...col.attributes }
-      col.isSelected = true
-    },
-    addColumn(data: any) {
-      current = data
-      const row = rows.value.find((t) => {
-        return t.key === current.row
-      }) as Row
-      rows.value.forEach((t) => {
-        t.isSelected = false
-        t.columns.forEach((c) => {
-          c.isSelected = false
-        })
-      })
-      rowAttribute.value = { ...row.attributes }
-      row.isSelected = true
-      const col: Column = {
-        key: uniqueId('page_edit-column'),
-        attributes: {
-          distribution: 'equal',
-          marginTop: 0,
-          marginLeft: 0,
-          marginRight: 0,
-          marginBottom: 0,
-          paddingTop: 0,
-          paddingLeft: 0,
-          paddingRight: 0,
-          paddingBottom: 0,
-          backgroundColor: '#ffffff',
-        },
-      }
-      columnAttribute.value = { ...col.attributes }
-      col.isSelected = true
-      current.column = col.key
-      row.columns.push(col)
-      drawer.value = true
-    },
-    deleteColumn(data: any) {
-      const row = rows.value.find((t) => {
-        return t.key === data.row
-      }) as Row
-      if (row.columns.length > 1) {
-        const index = row.columns.findIndex((t) => {
-          return t.key === current.column
-        })
-        row.columns.splice(index, 1)
-      }
-      else {
-        Message.error('不能删除唯一的单元格')
-      }
-    },
-    setComponent() {
-      activeSiderbar.value = 'component'
-    },
-    deleteRow(data: any) {
-      const index = rows.value.findIndex((t) => {
-        return t.key === data.row
-      })
-      rows.value.splice(index, 1)
-    },
-  },
-})
-const maps = new Map([
-  ['md', '16px'],
-  ['lg', '24px'],
-  ['sm', '8px'],
-])
-useEventBus('page-design-change').on((data: any) => {
-  style.value.minWidth = `${data.width}px`
-  style.value.minHeight = `${data.height}px`
-})
-const sidbarChange = (type: string) => {
-  activeSiderbar.value = type
-}
-const activePanel = ref<string>('attribute')
-const panelChange = (panel: string) => {
-  // i
-}
-const activeName = ref<string>('row')
-const onAdd = () => {
-  /* const myBus = useEventBus('reset-ruler')
-  myBus.emit()*/
-  rows.value.push({
-    key: uniqueId('page_editor-row'),
-    fixed: 1,
-    columns: [
-      {
-        key: uniqueId('page_edit-column'),
-        attributes: {
-          distribution: 'equal',
-          marginTop: 0,
-          marginLeft: 0,
-          marginRight: 0,
-          marginBottom: 0,
-          paddingTop: 0,
-          paddingLeft: 0,
-          paddingRight: 0,
-          paddingBottom: 0,
-          backgroundColor: '#fffff',
-        },
-      },
-    ],
-    attributes: { ...rowAttribute.value },
-  })
-}
 
-const pageBackgroundChange = (color: string) => {
-  style.value['background-color'] = color
-}
-const pageSpacingChange = (padding: any) => {
-  const obj = Object.keys(padding).reduce((pre: any, cur: string) => {
-    pre[`padding-${cur}`] = `${padding[cur]}px`
-    return pre
-  }, {})
-  style.value = assign(style.value, obj)
-}
-const rulerStyle = ref<object>({})
-onMounted(() => {
-  const box: HTMLElement = document.querySelector(
-    '.ruler__content',
-  ) as HTMLElement
-  const zoomX = box.clientWidth / designWidth.value
-  rulerStyle.value = {
-    'transform-origin': '0 0',
-    'transform': `scale(${zoomX},1)`,
-  }
-  useEventListener(editor, 'mouseup', () => {
-    rows.value.forEach((t) => {
-      t.isSelected = false
-      t.columns.forEach((c) => {
-        c.isSelected = false
-      })
-    })
-    rows.value = cloneDeep(rows.value)
-  })
-  let ruler: any = null
-  nextTick(() => {
-    ruler = useRuler(
-      document.querySelector('.ruler__horizontal') as HTMLElement,
-      document.querySelector('.ruler__vertical') as HTMLElement,
-      box,
-      document.querySelector('.page-area') as HTMLElement,
-    )
-  })
-  watch([() => designWidth.value, () => designHeight.value], () => {
-    const zoomX = box.clientWidth / designWidth.value
-    rulerStyle.value = {
-      'transform-origin': '0 0',
-      'transform': `scale(${zoomX},1)`,
-    }
-    debounce(() => {
-      nextTick(() => {
-        ruler.resetDesign(designWidth.value, designHeight.value)
-      })
-    }, 500)()
-  })
-})
-let rowGap = 'md'
-const setRowGap = (gap: string) => {
-  rows.value.forEach((item, index) => {
-    if (index !== 0) {
-      item.attributes.marginTop = parseInt(gap)
-    }
-    else {
-      item.attributes.marginTop = 0
-    }
-  })
-}
-const pageRowGapChange = (gap: any) => {
-  rowGap = gap
-  setRowGap(maps.get(rowGap) as string)
-}
-watch(
-  () => rows.value,
-  () => {
-    setRowGap(maps.get(rowGap) as string)
-  },
-)
-watch(
-  () => columnAttribute.value.distribution,
-  () => {
-    switch (columnAttribute.value.distribution) {
-      case 'fixed':
-        columnAttribute.value.width = 128
-        break
-      case 'scale':
-        columnAttribute.value.width = 1
-        break
-      default:
-        columnAttribute.value.width = undefined
-        break
-    }
-  },
-)
-watch(
-  () => columnAttribute.value,
-  () => {
-    const row = rows.value.find((t) => {
-      return t.key === current.row
-    }) as Row
-    const col = row.columns.find((t) => {
-      return t.key === current.column
-    }) as Column
-    col.attributes = { ...columnAttribute.value }
-  },
-  { deep: true },
-)
-watch(
-  () => rowAttribute.value,
-  () => {
-    const row = rows.value.find((t) => {
-      return t.key === current.row
-    }) as Row
-    row.attributes = { ...rowAttribute.value }
-  },
-  { deep: true },
-)
-const onDragEnd = (data: any) => {
-  const row = rows.value[data.row]
-  row.columns[data.column].component = data.component
-  rows.value = cloneDeep(rows.value)
-}
-const router = getCurrentInstance()?.proxy?.$router
-const onPreview = () => {
-  router?.push({ path: '/page-view/page1' })
-}
-</script>
 <style lang="scss" scoped>
 .page-editor {
   position: relative;

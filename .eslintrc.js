@@ -142,7 +142,7 @@ module.exports = {
       after: true,
     }],
     'space-before-blocks': [2, 'always'],
-    'space-before-function-paren': [2, 'never'],
+    'space-before-function-paren': [0, 'never'],
     'space-in-parens': [2, 'never'],
     'space-infix-ops': 2,
     'space-unary-ops': [2, {
@@ -166,5 +166,7 @@ module.exports = {
     'array-bracket-spacing': [2, 'never'],
     'vue/no-deprecated-v-bind-sync': 0,
     'vue/no-deprecated-slot-attribute': 0,
+    'vue/custom-event-name-casing': 0,
+    'vue/require-component-is': 0,
   },
 }
